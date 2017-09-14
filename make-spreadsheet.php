@@ -4,7 +4,7 @@
 $path = $argv[1];
 
 // greylist.txt has Craigslist IDs or substrings of the filenames to greylist
-$greylist = array_filter(explode("\n", file_get_contents(__DIR__ . '/greylist.txt')));
+$greylist = @array_filter(explode("\n", file_get_contents(__DIR__ . '/greylist.txt') ?: ''));
 function isGreyListed($filename, $greylist) {
   foreach ($greylist as $item)
     if (strpos($filename, $item) !== false)

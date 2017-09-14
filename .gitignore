@@ -2,3 +2,5 @@
 pages
 greylist.txt
 render.html
+.DS_Store
+trash
