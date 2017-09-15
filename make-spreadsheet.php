@@ -54,17 +54,20 @@ function go($fileName, $isGreyListed) {
   // Transmission
   $fields[] = between($z, '<span>transmission: <b>', '</b>');
 
+  // Precompute: Model Year
+  $year = (int) between($z, '<span><b>', '</b>');
+
   // Mileage
   $mileage = between($z, '<span>odometer: <b>', '</b>');
   if (!$mileage && strpos($z, 'k miles') > 0) {
     $mileage = (int) filter_var(substr($z, strpos($z, 'k miles') - 4, 4), FILTER_SANITIZE_NUMBER_FLOAT);
   }
-  if ($mileage < 500)
+  if ($mileage < 500 && $year < 2017)
     $mileage *= 1000;
   $fields[] = $mileage ?: '';
 
   // Model Year
-  $year = $fields[] = (int) between($z, '<span><b>', '</b>');
+  $fields[] = $year;
 
   // My Score
   $myScore = $fields[] = (2018 - $year) * 5000 + $mileage;
@@ -81,7 +84,7 @@ function go($fileName, $isGreyListed) {
   // Expected Price
   // This formula comes from logarithmic trendline based on observed data (of all car models being watched)
   // It may change as we get more data, watch more car models, and filter out bad data (i.e. non-running cars)
-  $expectedPrice = (int) (66854 - 5142 * log($myScore));
+  $expectedPrice = max(100, (int) (66854 - 5142 * log($myScore)));
   $fields[] = $expectedPrice;
 
   // Price-Expected
