@@ -1,4 +1,4 @@
-"Location","Post Title","Car Make","Car Model","Vehicle Title","Transmission","Mileage","Model Year","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
+"Location","Post Title","Car Make","Car Model","Model Size","Vehicle Title","Transmission","Mileage","Model Year","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
 <?php
 
 require_once __DIR__ . '/HtmlParser.php';
@@ -29,7 +29,8 @@ function go($fileName, $isGreyListed) {
   $fields = [];
   $z = file_get_contents($fileName);
 
-  $htmlParser = new HtmlParser($fileName, new CarModels());
+  $carModels = new CarModels();
+  $htmlParser = new HtmlParser($fileName, $carModels);
 
   // Location
   $fields[] = between($z, '<a href="/">', '</a>');
@@ -43,6 +44,9 @@ function go($fileName, $isGreyListed) {
 
   // Car Model
   $fields[] = $carModel;
+
+  // Model Size
+  $fields[] = $carModels->getInfo($carMake, $carModel)['size'];
 
   // Vehicle Title
   $fields[] = between($z, '<span>title status: <b>', '</b>');

@@ -26,4 +26,9 @@ class CarModels
 			}
 		}
 	}
+
+	public function getInfo($carMake, $carModel)
+	{
+		return $this->data[$carMake][$carModel];
+	}
 }

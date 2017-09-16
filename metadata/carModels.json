@@ -1,31 +1,36 @@
 {
     "Ford": {
         "Fiesta": {
-            "type": "sub-compact",
+            "size": "sub-compact",
             "makeModelSearchTerm": "fiesta",
             "extraKeywords": []
         },
         "Focus": {
-            "type": "compact",
+            "size": "compact",
             "makeModelSearchTerm": "focus",
             "extraKeywords": []
         }
     },
     "Honda": {
+        "Accord": {
+            "size": "mid-size",
+            "makeModelSearchTerm": "accord",
+            "extraKeywords": []
+        },
         "Fit": {
-            "type": "sub-compact",
+            "size": "sub-compact",
             "makeModelSearchTerm": "honda+fit",
             "extraKeywords": []
         }
     },
     "Toyota": {
         "Corolla": {
-            "type": "compact",
+            "size": "compact",
             "makeModelSearchTerm": "corolla",
             "extraKeywords": []
         },
         "Yaris": {
-            "type": "sub-compact",
+            "size": "sub-compact",
             "makeModelSearchTerm": "yaris",
             "extraKeywords": []
         }
