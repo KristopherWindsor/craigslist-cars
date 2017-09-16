@@ -1,4 +1,16 @@
 {
+    "Chevrolet": {
+        "Sonic": {
+            "size": "sub-compact",
+            "makeModelSearchTerm": "sonic",
+            "extraKeywords": []
+        },
+        "Spark": {
+            "size": "sub-compact",
+            "makeModelSearchTerm": "spark",
+            "extraKeywords": []
+        }
+    },
     "Ford": {
         "Fiesta": {
             "size": "sub-compact",
@@ -27,6 +39,11 @@
         "Corolla": {
             "size": "compact",
             "makeModelSearchTerm": "corolla",
+            "extraKeywords": []
+        },
+        "Prius": {
+            "size": "mid-size",
+            "makeModelSearchTerm": "prius",
             "extraKeywords": []
         },
         "Yaris": {

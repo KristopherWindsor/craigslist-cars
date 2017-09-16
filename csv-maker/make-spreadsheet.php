@@ -1,4 +1,4 @@
-"Location","Post Title","Car Make","Car Model","Model Size","Vehicle Title","Transmission","Mileage","Model Year","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
+"Location","Post Title","Car Make","Car Model","Model Size","Model Year","Vehicle Title","Transmission","Mileage","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
 <?php
 
 require_once __DIR__ . '/HtmlParser.php';
@@ -48,14 +48,15 @@ function go($fileName, $isGreyListed) {
   // Model Size
   $fields[] = $carModels->getInfo($carMake, $carModel)['size'];
 
+  // Model Year
+  $year = (int) between($z, '<span><b>', '</b>');
+  $fields[] = $year;
+
   // Vehicle Title
   $fields[] = between($z, '<span>title status: <b>', '</b>');
 
   // Transmission
   $fields[] = between($z, '<span>transmission: <b>', '</b>');
-
-  // Precompute: Model Year
-  $year = (int) between($z, '<span><b>', '</b>');
 
   // Mileage
   $mileage = between($z, '<span>odometer: <b>', '</b>');
@@ -67,9 +68,6 @@ function go($fileName, $isGreyListed) {
   $fields[] = $mileage ?: '';
   if ($mileage > 500000)
       $isGreyListed = true;
-
-  // Model Year
-  $fields[] = $year;
 
   // My Score
   $myScore = $fields[] = (2018 - $year) * 5000 + $mileage;
