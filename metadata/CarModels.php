@@ -17,4 +17,13 @@ class CarModels
 			}
 		}
 	}
+
+	public function getAll()
+	{
+		foreach ($this->data as $make => $i) {
+			foreach ($i as $model => $info) {
+				yield [$make, $model, $info];
+			}
+		}
+	}
 }

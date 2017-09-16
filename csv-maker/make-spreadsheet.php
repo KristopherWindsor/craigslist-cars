@@ -1,6 +1,9 @@
 "Location","Post Title","Car Model","Vehicle Title","Transmission","Mileage","Model Year","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
 <?php
 
+require_once __DIR__ . '/HtmlParser.php';
+require_once __DIR__ . '/../metadata/CarModels.php';
+
 $path = $argv[1];
 
 // greylist.txt has Craigslist IDs or substrings of the filenames to greylist
@@ -26,6 +29,8 @@ function go($fileName, $isGreyListed) {
   $fields = [];
   $z = file_get_contents($fileName);
 
+  $htmlParser = new HtmlParser($fileName, new CarModels());
+
   // Location
   $fields[] = between($z, '<a href="/">', '</a>');
 
@@ -33,19 +38,7 @@ function go($fileName, $isGreyListed) {
   $postTitle = $fields[] = html_entity_decode(between($z, '<span id="titletextonly">', '</span>'));
 
   // Car Model
-  if (stripos($postTitle, 'yaris') !== false) {
-    $carModel = 'Yaris';
-  } elseif (stripos($postTitle, 'corolla') !== false) {
-    $carModel = 'Corolla';
-  } elseif (stripos($postTitle, 'fiesta') !== false) {
-    $carModel = 'Fiesta';
-  } elseif (stripos($postTitle, 'focus') !== false) {
-    $carModel = 'Focus';
-  } elseif (stripos($postTitle, 'fit') !== false) {
-    $carModel = 'Honda Fit';
-  } else {
-    $carModel = '';
-  }
+  list($carMake, $carModel) = $htmlParser->getMakeAndModel();
   $fields[] = $carModel;
 
   // Vehicle Title
