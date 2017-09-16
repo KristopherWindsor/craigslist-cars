@@ -46,7 +46,9 @@ function go($fileName, $isGreyListed) {
   $fields[] = $carModel;
 
   // Model Size
-  $fields[] = $carModels->getInfo($carMake, $carModel)['size'];
+  $modelSize = between($z, '<span>size: <b>', '</b>') ?:
+      $carModels->getInfo($carMake, $carModel)['size'];
+  $fields[] = $modelSize;
 
   // Model Year
   $year = (int) between($z, '<span><b>', '</b>');
