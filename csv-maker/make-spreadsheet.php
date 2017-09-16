@@ -1,4 +1,4 @@
-"Location","Post Title","Car Model","Vehicle Title","Transmission","Mileage","Model Year","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
+"Location","Post Title","Car Make","Car Model","Vehicle Title","Transmission","Mileage","Model Year","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
 <?php
 
 require_once __DIR__ . '/HtmlParser.php';
@@ -37,8 +37,11 @@ function go($fileName, $isGreyListed) {
   // Post Title
   $postTitle = $fields[] = html_entity_decode(between($z, '<span id="titletextonly">', '</span>'));
 
-  // Car Model
+  // Car Make
   list($carMake, $carModel) = $htmlParser->getMakeAndModel();
+  $fields[] = $carMake;
+
+  // Car Model
   $fields[] = $carModel;
 
   // Vehicle Title
