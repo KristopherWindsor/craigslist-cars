@@ -9,18 +9,18 @@ $path = $argv[1];
 // greylist.txt has Craigslist IDs or substrings of the filenames to greylist
 $greylist = @array_filter(explode("\n", file_get_contents(__DIR__ . '/greylist.txt') ?: ''));
 function isGreyListed($filename, $greylist) {
-  foreach ($greylist as $item)
-    if (strpos($filename, $item) !== false)
-      return true;
-  return false;
+    foreach ($greylist as $item)
+        if (strpos($filename, $item) !== false)
+            return true;
+    return false;
 }
 
 $dir = new DirectoryIterator(__DIR__ . '/' . $path);
 foreach ($dir as $fileinfo) {
     if (!$fileinfo->isDot() && $fileinfo->getFilename() != '.DS_Store') {
         go(
-          __DIR__ . '/' . $path . '/' . $fileinfo->getFilename(),
-          isGreyListed($fileinfo->getFilename(), $greylist)
+            __DIR__ . '/' . $path . '/' . $fileinfo->getFilename(),
+            isGreyListed($fileinfo->getFilename(), $greylist)
         );
     }
 }
@@ -59,8 +59,10 @@ function go($fileName, $isGreyListed) {
     $mileage = (int) filter_var(substr($z, strpos($z, 'k miles') - 4, 4), FILTER_SANITIZE_NUMBER_FLOAT);
   }
   if ($mileage < 500 && $year < 2017)
-    $mileage *= 1000;
+      $mileage *= 1000;
   $fields[] = $mileage ?: '';
+  if ($mileage > 500000)
+      $isGreyListed = true;
 
   // Model Year
   $fields[] = $year;
@@ -70,11 +72,11 @@ function go($fileName, $isGreyListed) {
 
   // Price
   $price = between($z, '<span class="price">$', '</span>')
-    ?: (int) substr(strstr($z, '$'), 1);
+      ?: (int) substr(strstr($z, '$'), 1);
   if ($price <= 1)
-    $isGreyListed = true;
+      $isGreyListed = true;
   if ($price < 20)
-    $price *= 1000; // $5k or $8,000 (comma breaks parsing)
+      $price *= 1000; // $5k or $8,000 (comma breaks parsing)
   $fields[] = $price;
 
   // Expected Price
@@ -94,14 +96,14 @@ function go($fileName, $isGreyListed) {
 
   // First Image
   $firstImage = between($z, 'class="slide first visible"><img src="', '"') ?:
-    'https://sfbay.craigslist.org/favicon.ico';
+      'https://sfbay.craigslist.org/favicon.ico';
   $fields[] = $firstImage;
 
   // Greylist
   $fields[] = $isGreyListed ? 'greylisted' : 'ok';
 
   foreach ($fields as $index => $field)
-    echo ($index ? ',' : '') . '"' . addslashes($field) . '"';
+      echo ($index ? ',' : '') . '"' . addslashes($field) . '"';
   echo "\n";
 }
 
