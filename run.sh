@@ -1,5 +1,5 @@
-# Scraper
-php scraper/scrape.php
+# Scraper is not run here -- it should be run separately via cron
+# php scraper/scrape.php
 
 # CSV Parser
 php csv-maker/make-spreadsheet.php '../pages' | grep -v '""' > cars-all.csv
