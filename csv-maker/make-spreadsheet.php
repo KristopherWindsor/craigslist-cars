@@ -49,8 +49,7 @@ function go($fileName, $isGreyListed) {
   $fields[] = $carModel;
 
   // Model Size
-  $modelSize = between($z, '<span>size: <b>', '</b>') ?:
-      $carModels->getInfo($carMake, $carModel)['size'];
+  $modelSize = between($z, '<span>size: <b>', '</b>') ?: 'unknown';
   $fields[] = $modelSize;
 
   // Model Year
@@ -68,7 +67,7 @@ function go($fileName, $isGreyListed) {
   if ($mileage <= 0 && strpos($z, 'k miles') > 0) {
     $mileage = abs((int) filter_var(substr($z, strpos($z, 'k miles') - 4, 4), FILTER_SANITIZE_NUMBER_FLOAT));
   }
-  if ($mileage < 500 && $year < 2017)
+  if ($mileage < 500 && $year < 2016)
       $mileage *= 1000;
   $fields[] = $mileage ?: '';
   if ($mileage > 500000)

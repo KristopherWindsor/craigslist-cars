@@ -1,99 +1,103 @@
 {
+    "BMW": {
+        "3": {"makeModelSearchTerm": "bmw"},
+        "4": {},
+        "5": {},
+        "6": {},
+        "7": {},
+        "M2": {},
+        "M3": {},
+        "M4": {},
+        "M5": {},
+        "M6": {},
+        "X1": {},
+        "X3": {},
+        "X4": {},
+        "X5": {},
+        "X6": {},
+        "Z3": {},
+        "Z4": {},
+        "i3": {},
+        "i8": {}
+    },
     "Chevrolet": {
         "Sonic": {
-            "size": "sub-compact",
             "makeModelSearchTerm": "sonic",
             "extraKeywords": []
         },
         "Spark": {
-            "size": "sub-compact",
             "makeModelSearchTerm": "spark",
             "extraKeywords": []
         }
     },
     "Ford": {
         "Explorer": {
-            "size": "mid-size",
             "makeModelSearchTerm": "explorer",
             "extraKeywords": []
         },
         "Fiesta": {
-            "size": "sub-compact",
             "makeModelSearchTerm": "fiesta",
             "extraKeywords": []
         },
         "Focus": {
-            "size": "compact",
             "makeModelSearchTerm": "focus",
             "extraKeywords": []
         },
         "Mustang": {
-            "size": "mid-size",
             "makeModelSearchTerm": "mustang",
             "extraKeywords": []
         }
     },
     "Honda": {
         "Accord": {
-            "size": "mid-size",
             "makeModelSearchTerm": "accord",
             "extraKeywords": []
         },
         "Civic": {
-            "size": "compact",
             "makeModelSearchTerm": "civic",
             "extraKeywords": []
         },
         "Fit": {
-            "size": "sub-compact",
             "makeModelSearchTerm": "honda+fit",
             "extraKeywords": []
         }
     },
     "Hyundai": {
         "Elantra": {
-            "size": "compact",
             "makeModelSearchTerm": "elantra",
             "extraKeywords": []
         }
     },
     "Mini": {
         "Clubman": {
-            "size": "compact",
             "makeModelSearchTerm": "mini+clubman",
             "extraKeywords": []
         },
         "Cooper": {
-            "size": "sub-compact",
             "makeModelSearchTerm": "mini+cooper",
             "extraKeywords": []
         },
         "Countryman": {
-            "size": "compact",
             "makeModelSearchTerm": "mini+countryman",
             "extraKeywords": []
         }
     },
     "Toyota": {
         "Corolla": {
-            "size": "compact",
             "makeModelSearchTerm": "corolla",
             "extraKeywords": []
         },
         "Prius": {
-            "size": "mid-size",
             "makeModelSearchTerm": "prius",
             "extraKeywords": []
         },
         "Yaris": {
-            "size": "sub-compact",
             "makeModelSearchTerm": "yaris",
             "extraKeywords": []
         }
     },
     "Volkswagen": {
         "Vanagon": {
-            "size": "full-size",
             "makeModelSearchTerm": "vanagon",
             "extraKeywords": []
         }
