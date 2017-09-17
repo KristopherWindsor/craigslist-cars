@@ -57,6 +57,23 @@
             "extraKeywords": []
         }
     },
+    "Mini": {
+        "Clubman": {
+            "size": "compact",
+            "makeModelSearchTerm": "mini+clubman",
+            "extraKeywords": []
+        },
+        "Cooper": {
+            "size": "sub-compact",
+            "makeModelSearchTerm": "mini+cooper",
+            "extraKeywords": []
+        },
+        "Countryman": {
+            "size": "compact",
+            "makeModelSearchTerm": "mini+countryman",
+            "extraKeywords": []
+        }
+    },
     "Toyota": {
         "Corolla": {
             "size": "compact",

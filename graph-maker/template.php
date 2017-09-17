@@ -4,12 +4,10 @@
     <title>Craigslist cars for sale</title>
     <style>
         body, html {margin: 0; padding: 0; max-width: 100vw; overflow-x: hidden;}
-        fieldset p {font-weight: bold;}
-        fieldset {position: relative;}
-        button {position: absolute; right: 1em; bottom: 1em; font-size: 48pt; background: none;}
-
-        select {width: 20em;}
-        td {vertical-align: top;}
+        .controls {background-color: #d7dbf7; padding: 1em;}
+        .controls p {font-weight: bold;}
+        .controls select {width: 20em;}
+        .controls td {vertical-align: top;}
     </style>
     <script type="text/javascript">
 
@@ -23,7 +21,8 @@
             "datePosted": "Time of post (X hours ago)",
             "modelYear": "Model year",
             "price": "Price",
-            "fn1": "Fn1: Mileage + 5000 mi. per year old"
+            "fn1": "Fn1: Mileage + 5000 mi. per year old",
+            "fn2": "Expected price based on fn1"
         };
         var dimensionFns = {
             "mileage": function (item) {
@@ -40,6 +39,10 @@
             },
             "fn1": function (item) {
                 return item.mileage + (2018 - item.modelYear) * 5000;
+            },
+            "fn2": function (item) {
+                var fn1 = item.mileage + (2018 - item.modelYear) * 5000;
+                return 66854 - 5142 * Math.log(fn1);
             }
         };
         var xDimFn = dimensionFns[document.getElementById("xDim").value];
@@ -99,8 +102,8 @@
             if (document.getElementById("segDatePosted").checked) {
                 key += (key == "" ? "" : "+");
                 tmp = (Date.now() - (new Date(item.datePosted))) / 1000 / 3600;
-                if (tmp < 2)
-                    key += "Last 2 hours";
+                if (tmp < 4)
+                    key += "Last 4 hours";
                 else if (tmp < 8)
                     key += "2-8 hours ago";
                 else if (tmp < 24)
@@ -180,7 +183,7 @@
             chartData.push({
                 type: "scatter",
                 markerType: "square",
-                toolTipContent: "<span style='\"'color: {color};'\"'><strong>{postTitle}</strong></span><br><img src='\"'{firstImage}'\"' style='\"'max-width: 200px; max-height: 200px;'\"'><br/><strong>${y}</strong> (expected ${expectedPrice}, score = {x})<br><strong>{mileage}</strong> miles, <strong>{vehicleTitle}</strong> title, <strong>{transmission}</strong> transmission",
+                toolTipContent: "<span style='\"'color: {color};'\"'><strong>{postTitle}</strong></span><br><img src='\"'{firstImage}'\"' style='\"'max-width: 200px; max-height: 200px;'\"'><br/><strong>${price}</strong><br><strong>{mileage}</strong> miles, <strong>{vehicleTitle}</strong> title, <strong>{transmission}</strong> transmission",
                 name: i,
                 showInLegend: true,
                 dataPoints: filteredData[i],
@@ -246,138 +249,138 @@
     </div>
 
     <form>
-        <div>
-            <fieldset>
-                <p>Data filtering</p>
+        <div class="controls">
+            <p>Data filtering</p>
 
-                <table>
-                    <tr>
-                        <td>
-                            <select id="filLocation">
-                                <option value="">Filter by location...</option>
-                                <option>bakersfield</option>
-                                <option>chico</option>
-                                <option>fresno</option>
-                                <option>gold country</option>
-                                <option>hanford</option>
-                                <option>humboldt</option>
-                                <option>imperial co</option>
-                                <option>inland empire</option>
-                                <option>los angeles</option>
-                                <option>mendocino</option>
-                                <option>merced</option>
-                                <option>modesto</option>
-                                <option>monterey bay</option>
-                                <option>orange co</option>
-                                <option>palm springs</option>
-                                <option>redding</option>
-                                <option>reno</option>
-                                <option>sacramento</option>
-                                <option>san diego</option>
-                                <option>san luis obispo</option>
-                                <option>santa barbara</option>
-                                <option>santa maria</option>
-                                <option>SF bay area</option>
-                                <option>siskiyou</option>
-                                <option>stockton</option>
-                                <option>susanville</option>
-                                <option>ventura</option>
-                                <option>visalia-tulare</option>
-                                <option>yuba-sutter</option>
-                            </select>
-                            <br><br>
-                            <select id="filPostDate">
-                                <option value="">Filter by date of post...</option>
-                                <option value="2">Last 2 hours</option>
-                                <option value="8">Last 8 hours</option>
-                                <option value="24">Last 24 hours</option>
-                                <option value="72">Last 3 days</option>
-                                <option value="168">Last 7 days</option>
-                                <option value="336">Last 14 days</option>
-                            </select>
-                            <br><br>
-                            <input type="text" id="filPostTitle" placeholder="Filter by post title...">
-                            <br><br>
-                            <input type="text" id="filModelYear" placeholder="Filter by year...">
-                            <br><br>
-                            <select id="filVehicleTitle">
-                                <option value="">Filter by car title...</option>
-                                <option value="clean">Only show clean titles</option>
-                                <option value="salvage">Only show salvage titles</option>
-                            </select>
-                            <br><br>
-                            <select id="filTransmission">
-                                <option value="">Filter by transmission...</option>
-                                <option value="automatic">Only show automatic transmissions</option>
-                                <option value="manual">Only show manual transmissions</option>
-                            </select>
-                            <br><br>
-                            <input type="text" id="filMileageMin" placeholder="Filter by mileage (min)...">
-                            <input type="text" id="filMileageMax" placeholder="Filter by mileage (max)...">
-                            <br><br>
-                            <input type="text" id="filPriceMin" placeholder="Filter by price (min)...">
-                            <input type="text" id="filPriceMax" placeholder="Filter by price (max)...">
-                            <br><br>
-                            <select id="filModelSize">
-                                <option value="">Filter by vehicle size...</option>
-                                <option>sub-compact</option>
-                                <option>compact</option>
-                                <option>mid-size</option>
-                                <option>full-size</option>
-                            </select>
+            <table>
+                <tr>
+                    <td>
+                        <select id="filLocation">
+                            <option value="">Filter by location...</option>
+                            <option>bakersfield</option>
+                            <option>chico</option>
+                            <option>fresno</option>
+                            <option>gold country</option>
+                            <option>hanford</option>
+                            <option>humboldt</option>
+                            <option>imperial co</option>
+                            <option>inland empire</option>
+                            <option>los angeles</option>
+                            <option>mendocino</option>
+                            <option>merced</option>
+                            <option>modesto</option>
+                            <option>monterey bay</option>
+                            <option>orange co</option>
+                            <option>palm springs</option>
+                            <option>redding</option>
+                            <option>reno</option>
+                            <option>sacramento</option>
+                            <option>san diego</option>
+                            <option>san luis obispo</option>
+                            <option>santa barbara</option>
+                            <option>santa maria</option>
+                            <option>SF bay area</option>
+                            <option>siskiyou</option>
+                            <option>stockton</option>
+                            <option>susanville</option>
+                            <option>ventura</option>
+                            <option>visalia-tulare</option>
+                            <option>yuba-sutter</option>
+                        </select>
+                        <br><br>
+                        <select id="filPostDate">
+                            <option value="">Filter by date of post...</option>
+                            <option value="4">Last 4 hours</option>
+                            <option value="8">Last 8 hours</option>
+                            <option value="24">Last 24 hours</option>
+                            <option value="72">Last 3 days</option>
+                            <option value="168">Last 7 days</option>
+                            <option value="336">Last 14 days</option>
+                        </select>
+                        <br><br>
+                        <input type="text" id="filPostTitle" placeholder="Filter by post title...">
+                        <br><br>
+                        <input type="text" id="filModelYear" placeholder="Filter by year...">
+                        <br><br>
+                        <select id="filVehicleTitle">
+                            <option value="">Filter by car title...</option>
+                            <option value="clean">Only show clean titles</option>
+                            <option value="salvage">Only show salvage titles</option>
+                        </select>
+                        <br><br>
+                        <select id="filTransmission">
+                            <option value="">Filter by transmission...</option>
+                            <option value="automatic">Only show automatic transmissions</option>
+                            <option value="manual">Only show manual transmissions</option>
+                        </select>
+                        <br><br>
+                        <input type="text" id="filMileageMin" placeholder="Filter by mileage (min)...">
+                        <input type="text" id="filMileageMax" placeholder="Filter by mileage (max)...">
+                        <br><br>
+                        <input type="text" id="filPriceMin" placeholder="Filter by price (min)...">
+                        <input type="text" id="filPriceMax" placeholder="Filter by price (max)...">
+                        <br><br>
+                        <select id="filModelSize">
+                            <option value="">Filter by vehicle size...</option>
+                            <option>sub-compact</option>
+                            <option>compact</option>
+                            <option>mid-size</option>
+                            <option>full-size</option>
+                        </select>
 
-                        </td>
-                        <td>
+                    </td>
+                    <td>
 
-                            <?php
-                                require_once __DIR__ . '/../metadata/CarModels.php';
-                                $models = new CarModels();
-                                $models->onEach(function ($make, $model, $info) {
-                                    echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
-                                });
-                            ?>
+                        <?php
+                            require_once __DIR__ . '/../metadata/CarModels.php';
+                            $models = new CarModels();
+                            $models->onEach(function ($make, $model, $info) {
+                                echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
+                            });
+                        ?>
 
-                        </td>
-                    </tr>
-                </table>
+                    </td>
+                </tr>
+            </table>
 
-                <p>Data segmenting</p>
-                <label><input type="checkbox" id="segLocation"> Segment by location</label>
-                <label><input type="checkbox" id="segDatePosted"> Segment by date of post</label>
-                <label><input type="checkbox" id="segCarMake"> Segment by car make</label>
-                <label><input type="checkbox" id="segCarModel"> Segment by car model</label>
-                <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
-                <label><input type="checkbox" id="segVehicleTitle"> Segment by vehicle title</label>
-                <label><input type="checkbox" id="segTransmission"> Segment by transmission type</label>
-                <label><input type="checkbox" id="segMileage"> Segment by miles</label>
-                <label><input type="checkbox" id="segPrice"> Segment by price</label>
-                <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
+            <p>Data segmenting</p>
+            <label><input type="checkbox" id="segLocation"> Segment by location</label>
+            <label><input type="checkbox" id="segDatePosted"> Segment by date of post</label>
+            <label><input type="checkbox" id="segCarMake"> Segment by car make</label>
+            <label><input type="checkbox" id="segCarModel"> Segment by car model</label>
+            <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
+            <label><input type="checkbox" id="segVehicleTitle"> Segment by vehicle title</label>
+            <label><input type="checkbox" id="segTransmission"> Segment by transmission type</label>
+            <label><input type="checkbox" id="segMileage"> Segment by miles</label>
+            <label><input type="checkbox" id="segPrice"> Segment by price</label>
+            <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
 
-                <p>Graph dimensions</p>
-                X dimension:
-                <select id="xDim">
-                    <option value="mileage">Mileage</option>
-                    <option value="datePosted">Time of post (X hours ago)</option>
-                    <option value="modelYear">Model year</option>
-                    <option value="price">Price</option>
+            <p>Graph dimensions</p>
+            X dimension:
+            <select id="xDim">
+                <option value="mileage">Mileage</option>
+                <option value="datePosted">Time of post (X hours ago)</option>
+                <option value="modelYear">Model year</option>
+                <option value="price">Price</option>
 
-                    <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
-                </select>
-                <br>
-                Y dimension:
-                <select id="yDim">
-                    <option value="price">Price</option>
-                    <option value="modelYear">Model year</option>
-                    <option value="datePosted">Time of post (X hours ago)</option>
-                    <option value="mileage">Mileage</option>
+                <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
+                <option value="fn2">fn2": "Expected price based on fn1</option>
+            </select>
+            <br>
+            Y dimension:
+            <select id="yDim">
+                <option value="price">Price</option>
+                <option value="modelYear">Model year</option>
+                <option value="datePosted">Time of post (X hours ago)</option>
+                <option value="mileage">Mileage</option>
 
-                    <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
-                </select>
+                <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
+                <option value="fn2">Fn2: Expected price based on fn1</option>
+            </select>
 
-                <br><br><br>
-                <br><br><br>
-                <br><br><br>
-            </fieldset>
+            <br><br><br>
+            <br><br><br>
+            <br><br><br>
         </div>
     </form>
 </body>

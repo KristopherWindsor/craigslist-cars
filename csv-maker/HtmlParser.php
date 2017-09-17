@@ -23,21 +23,21 @@ class HtmlParser
 
             // Search make + model (consecutive words)
             if (stripos($postTitle, "$make $model") !== false)
-                $score += 6;
+                $score += 6 * strlen($make . $model);
             elseif (stripos($this->html, "$make $model") !== false)
-                $score += 5;
+                $score += 5 * strlen($make . $model);
 
             // Search make + model (non-consecutive)
             if (stripos($postTitle, $make) !== false && stripos($postTitle, $model) !== false)
-                $score += 4;
+                $score += 4 * strlen($make . $model);
             elseif (stripos($this->html, $make) !== false && stripos($this->html, $model) !== false)
-                $score += 3;
+                $score += 3 * strlen($make . $model);
 
             // Search model
             if (stripos($postTitle, $model) !== false)
-                $score += 2;
+                $score += 2 * strlen($model);
             elseif (stripos($this->html, $model) !== false)
-                $score += 1;
+                $score += 1 * strlen($model);
 
             $scores["$make:$model"] = $score;
         }
