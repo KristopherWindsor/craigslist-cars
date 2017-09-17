@@ -18,6 +18,33 @@
     function updateGraph() {
         var filteredData = [], tmp, item;
 
+        var dimensionFnNames = {
+            "mileage": "Mileage",
+            "datePosted": "Time of post (X hours ago)",
+            "modelYear": "Model year",
+            "price": "Price",
+            "fn1": "Fn1: Mileage + 5000 mi. per year old"
+        };
+        var dimensionFns = {
+            "mileage": function (item) {
+                return item.mileage;
+            },
+            "datePosted": function (item) {
+                return (Date.now() - (new Date(item.datePosted))) / 1000 / 3600;
+            },
+            "modelYear": function (item) {
+                return item.modelYear;
+            },
+            "price": function (item) {
+                return item.price;
+            },
+            "fn1": function (item) {
+                return item.mileage + (2018 - item.modelYear) * 5000;
+            }
+        };
+        var xDimFn = dimensionFns[document.getElementById("xDim").value];
+        var yDimFn = dimensionFns[document.getElementById("yDim").value];
+
         for (var i in allData) {
             item = allData[i];
 
@@ -120,7 +147,7 @@
             if (document.getElementById("segPrice").checked) {
                 key += (key == "" ? "" : "+");
                 if (item.price < 1000)
-                    key += "< $1000";
+                    key += "<$1000";
                 else if (item.price < 3000)
                     key += "$1-3k";
                 else if (item.price < 5000)
@@ -142,8 +169,8 @@
             if (!filteredData[key]) {
                 filteredData[key] = [];
             }
-            item.x = item.myScore;
-            item.y = item.price;
+            item.x = xDimFn(item);
+            item.y = yDimFn(item);
             filteredData[key].push(item);
         }
 
@@ -171,12 +198,11 @@
             },
             animationEnabled: false,
             axisX: {
-                title:"Mileage + age (5,000 extra miles per year old)",
+                title: dimensionFnNames[document.getElementById("xDim").value],
                 titleFontSize: 16
-                
             },
             axisY:{
-                title: "Listing price",
+                title: dimensionFnNames[document.getElementById("yDim").value],
                 titleFontSize: 16
             },
             legend: {
@@ -327,9 +353,30 @@
                 <label><input type="checkbox" id="segPrice"> Segment by price</label>
                 <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
 
+                <p>Graph dimensions</p>
+                X dimension:
+                <select id="xDim">
+                    <option value="mileage">Mileage</option>
+                    <option value="datePosted">Time of post (X hours ago)</option>
+                    <option value="modelYear">Model year</option>
+                    <option value="price">Price</option>
+
+                    <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
+                </select>
                 <br>
-                <br>
-                <br>
+                Y dimension:
+                <select id="yDim">
+                    <option value="price">Price</option>
+                    <option value="modelYear">Model year</option>
+                    <option value="datePosted">Time of post (X hours ago)</option>
+                    <option value="mileage">Mileage</option>
+
+                    <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
+                </select>
+
+                <br><br><br>
+                <br><br><br>
+                <br><br><br>
             </fieldset>
         </div>
     </form>
