@@ -25,6 +25,12 @@
             tmp = document.getElementById("filLocation").value;
             if (tmp && tmp != item.location)
                 continue;
+            tmp = document.getElementById("filPostDate").value;
+            if (tmp) {
+                tmp = new Date(Date.now() - parseFloat(tmp) * 3600 * 1000);
+                if (new Date(item.datePosted) < tmp)
+                    continue;
+            }
             tmp = document.getElementById("filPostTitle").value.toLowerCase();
             if (tmp && !item.postTitle.toLowerCase().includes(tmp))
                 continue;
@@ -62,6 +68,24 @@
             var key = '';
             if (document.getElementById("segLocation").checked) {
                 key = item.location;
+            }
+            if (document.getElementById("segDatePosted").checked) {
+                key += (key == "" ? "" : "+");
+                tmp = (Date.now() - (new Date(item.datePosted))) / 1000 / 3600;
+                if (tmp < 2)
+                    key += "Last 2 hours";
+                else if (tmp < 8)
+                    key += "2-8 hours ago";
+                else if (tmp < 24)
+                    key += "8-24 hours ago";
+                else if (tmp < 72)
+                    key += "2-3 days ago";
+                else if (tmp < 168)
+                    key += "3-7 days ago";
+                else if (tmp < 336)
+                    key += "1-2 weeks ago";
+                else
+                    key += "2+ weeks ago";
             }
             if (document.getElementById("segCarMake").checked) {
                 key += (key == "" ? "" : "+");
@@ -236,6 +260,16 @@
                                 <option>yuba-sutter</option>
                             </select>
                             <br><br>
+                            <select id="filPostDate">
+                                <option value="">Filter by date of post...</option>
+                                <option value="2">Last 2 hours</option>
+                                <option value="8">Last 8 hours</option>
+                                <option value="24">Last 24 hours</option>
+                                <option value="72">Last 3 days</option>
+                                <option value="168">Last 7 days</option>
+                                <option value="336">Last 14 days</option>
+                            </select>
+                            <br><br>
                             <input type="text" id="filPostTitle" placeholder="Filter by post title...">
                             <br><br>
                             <input type="text" id="filModelYear" placeholder="Filter by year...">
@@ -283,14 +317,15 @@
 
                 <p>Data segmenting</p>
                 <label><input type="checkbox" id="segLocation"> Segment by location</label>
+                <label><input type="checkbox" id="segDatePosted"> Segment by date of post</label>
                 <label><input type="checkbox" id="segCarMake"> Segment by car make</label>
                 <label><input type="checkbox" id="segCarModel"> Segment by car model</label>
-                <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
                 <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
                 <label><input type="checkbox" id="segVehicleTitle"> Segment by vehicle title</label>
                 <label><input type="checkbox" id="segTransmission"> Segment by transmission type</label>
                 <label><input type="checkbox" id="segMileage"> Segment by miles</label>
                 <label><input type="checkbox" id="segPrice"> Segment by price</label>
+                <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
 
                 <br>
                 <br>

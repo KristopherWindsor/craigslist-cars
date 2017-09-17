@@ -23,6 +23,7 @@ function makeSeries($bunchOfRows) {
     foreach ($bunchOfRows as $i)
         $dataPoints[] =
             '{ location: "' .         $i['Location'] . '"' .
+            ', datePosted: "' .       $i['Date Posted'] . '"' .
             ', postTitle: "' .        $i['Post Title'] . '"' .
             ', carMake: "' .          $i['Car Make'] . '"' .
             ', carModel: "' .         $i['Car Model'] . '"' .
