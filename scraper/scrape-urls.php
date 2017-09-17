@@ -13,6 +13,6 @@ foreach ($urls as $url) {
     continue;
 
   file_put_contents($filename, $page);
-  sleep(5);
+  // sleep(1);
 }
 
