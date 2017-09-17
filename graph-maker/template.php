@@ -7,6 +7,9 @@
         fieldset p {font-weight: bold;}
         fieldset {position: relative;}
         button {position: absolute; right: 1em; bottom: 1em; font-size: 48pt; background: none;}
+
+        select {width: 20em;}
+        td {vertical-align: top;}
     </style>
     <script type="text/javascript">
 
@@ -46,6 +49,12 @@
             tmp = parseFloat(document.getElementById("filMileageMax").value);
             if (!isNaN(tmp) && tmp < item.mileage)
                 continue;
+            tmp = parseFloat(document.getElementById("filPriceMin").value);
+            if (!isNaN(tmp) && tmp > item.price)
+                continue;
+            tmp = parseFloat(document.getElementById("filPriceMax").value);
+            if (!isNaN(tmp) && tmp < item.price)
+                continue;
 
 
 
@@ -84,6 +93,23 @@
                 tmp = Math.floor(item.mileage / 50000) * 50;
                 key += tmp + "k-" + (tmp + 49) + "k";
             }
+            if (document.getElementById("segPrice").checked) {
+                key += (key == "" ? "" : "+");
+                if (item.price < 1000)
+                    key += "< $1000";
+                else if (item.price < 3000)
+                    key += "$1-3k";
+                else if (item.price < 5000)
+                    key += "$3-5k";
+                else if (item.price < 8000)
+                    key += "$5-8k";
+                else if (item.price < 16000)
+                    key += "$8-16k";
+                else if (item.price < 32000)
+                    key += "$16-32k";
+                else
+                    key += "$32k+";
+            }
             if (key == "") {
                 key = "All cars";
             }
@@ -103,7 +129,7 @@
             chartData.push({
                 type: "scatter",
                 markerType: "square",
-                toolTipContent: "<span style='\"'color: {color};'\"'><strong>{postTitle}</strong></span><br><img src='\"'{firstImage}'\"' style='\"'max-width: 200px; max-height: 200px;'\"'><br/><strong>${y}</strong> (expected ${expectedPrice}, score = {x})<br><strong>{mileage}k</strong> miles, <strong>{vehicleTitle}</strong> title, <strong>{transmission}</strong> transmission",
+                toolTipContent: "<span style='\"'color: {color};'\"'><strong>{postTitle}</strong></span><br><img src='\"'{firstImage}'\"' style='\"'max-width: 200px; max-height: 200px;'\"'><br/><strong>${y}</strong> (expected ${expectedPrice}, score = {x})<br><strong>{mileage}</strong> miles, <strong>{vehicleTitle}</strong> title, <strong>{transmission}</strong> transmission",
                 name: i,
                 showInLegend: true,
                 dataPoints: filteredData[i],
@@ -172,72 +198,88 @@
     <form>
         <div>
             <fieldset>
-                <!-- <button onclick="updateGraph(); return false">Update graph</button> -->
-
                 <p>Data filtering</p>
 
+                <table>
+                    <tr>
+                        <td>
+                            <select id="filLocation">
+                                <option value="">Filter by location...</option>
+                                <option>bakersfield</option>
+                                <option>chico</option>
+                                <option>fresno</option>
+                                <option>gold country</option>
+                                <option>hanford</option>
+                                <option>humboldt</option>
+                                <option>imperial co</option>
+                                <option>inland empire</option>
+                                <option>los angeles</option>
+                                <option>mendocino</option>
+                                <option>merced</option>
+                                <option>modesto</option>
+                                <option>monterey bay</option>
+                                <option>orange co</option>
+                                <option>palm springs</option>
+                                <option>redding</option>
+                                <option>reno</option>
+                                <option>sacramento</option>
+                                <option>san diego</option>
+                                <option>san luis obispo</option>
+                                <option>santa barbara</option>
+                                <option>santa maria</option>
+                                <option>SF bay area</option>
+                                <option>siskiyou</option>
+                                <option>stockton</option>
+                                <option>susanville</option>
+                                <option>ventura</option>
+                                <option>visalia-tulare</option>
+                                <option>yuba-sutter</option>
+                            </select>
+                            <br><br>
+                            <input type="text" id="filPostTitle" placeholder="Filter by post title...">
+                            <br><br>
+                            <input type="text" id="filModelYear" placeholder="Filter by year...">
+                            <br><br>
+                            <select id="filVehicleTitle">
+                                <option value="">Filter by car title...</option>
+                                <option value="clean">Only show clean titles</option>
+                                <option value="salvage">Only show salvage titles</option>
+                            </select>
+                            <br><br>
+                            <select id="filTransmission">
+                                <option value="">Filter by transmission...</option>
+                                <option value="automatic">Only show automatic transmissions</option>
+                                <option value="manual">Only show manual transmissions</option>
+                            </select>
+                            <br><br>
+                            <input type="text" id="filMileageMin" placeholder="Filter by mileage (min)...">
+                            <input type="text" id="filMileageMax" placeholder="Filter by mileage (max)...">
+                            <br><br>
+                            <input type="text" id="filPriceMin" placeholder="Filter by price (min)...">
+                            <input type="text" id="filPriceMax" placeholder="Filter by price (max)...">
+                            <br><br>
+                            <select id="filModelSize">
+                                <option value="">Filter by vehicle size...</option>
+                                <option>sub-compact</option>
+                                <option>compact</option>
+                                <option>mid-size</option>
+                                <option>full-size</option>
+                            </select>
 
-                <select id="filLocation">
-                    <option value="">Filter by location...</option>
-                    <option>bakersfield</option>
-                    <option>chico</option>
-                    <option>fresno</option>
-                    <option>gold country</option>
-                    <option>hanford</option>
-                    <option>humboldt</option>
-                    <option>imperial co</option>
-                    <option>inland empire</option>
-                    <option>los angeles</option>
-                    <option>mendocino</option>
-                    <option>merced</option>
-                    <option>modesto</option>
-                    <option>monterey bay</option>
-                    <option>orange co</option>
-                    <option>palm springs</option>
-                    <option>redding</option>
-                    <option>reno</option>
-                    <option>sacramento</option>
-                    <option>san diego</option>
-                    <option>san luis obispo</option>
-                    <option>santa barbara</option>
-                    <option>santa maria</option>
-                    <option>SF bay area</option>
-                    <option>siskiyou</option>
-                    <option>stockton</option>
-                    <option>susanville</option>
-                    <option>ventura</option>
-                    <option>visalia-tulare</option>
-                    <option>yuba-sutter</option>
-                </select>
-                <input type="text" id="filPostTitle" placeholder="Filter by post title...">
-                <br>
-                <?php
-                    require_once __DIR__ . '/../metadata/CarModels.php';
-                    $models = new CarModels();
-                    $models->onEach(function ($make, $model, $info) {
-                        echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
-                    });
-                ?>
-                <select id="filModelSize">
-                    <option value="">Filter by vehicle size...</option>
-                    <option>sub-compact</option>
-                    <option>compact</option>
-                    <option>mid-size</option>
-                    <option>full-size</option>
-                </select>
-                <input type="text" id="filModelYear" placeholder="Filter by model year...">
-                <select id="filVehicleTitle">
-                    <option value="">Filter by car title...</option>
-                    <option value="clean">Only show clean titles</option>
-                    <option value="salvage">Only show salvage titles</option>
-                </select>
-                <select id="filTransmission">
-                    <option value="">Filter by transmission...</option>
-                    <option value="automatic">Only show automatic transmissions</option>
-                    <option value="manual">Only show manual transmissions</option>
-                </select>
-                <input type="text" id="filMileageMin" placeholder="Filter by milage (min)">
-                <input type="text" id="filMileageMax" placeholder="Filter by milage (max)">
+                        </td>
+                        <td>
+
+                            <?php
+                                require_once __DIR__ . '/../metadata/CarModels.php';
+                                $models = new CarModels();
+                                $models->onEach(function ($make, $model, $info) {
+                                    echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
+                                });
+                            ?>
+
+                        </td>
+                    </tr>
+                </table>
 
                 <p>Data segmenting</p>
                 <label><input type="checkbox" id="segLocation"> Segment by location</label>
@@ -247,10 +289,8 @@
                 <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
                 <label><input type="checkbox" id="segVehicleTitle"> Segment by vehicle title</label>
                 <label><input type="checkbox" id="segTransmission"> Segment by transmission type</label>
-
-
-
                 <label><input type="checkbox" id="segMileage"> Segment by miles</label>
+                <label><input type="checkbox" id="segPrice"> Segment by price</label>
 
                 <br>
                 <br>
