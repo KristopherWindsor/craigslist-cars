@@ -25,7 +25,7 @@
             if (tmp && tmp != item.transmission)
                 continue;
             tmp = item.carModel;
-            if (item.carModel == "Fiesta" && !document.getElementById("carModelFiesta").checked)
+            if (item.carModel == "Fiesta" && !document.getElementById("carModelFordFiesta").checked)
                 continue;
 
             // Compute key (group name) for segmenting
@@ -143,11 +143,13 @@
                     <option value="manual">Only show manual transmissions</option>
                 </select>
                 <br>
-                <label>Show Ford Fiesta    <input type="checkbox" id="carModelFiesta" checked></label><br>
-                <label>Show Ford Focus     <input type="checkbox" id="carModelFocus" checked></label><br>
-                <label>Show Honda Fit      <input type="checkbox" id="carModelHondaFit" checked></label><br>
-                <label>Show Toyota Corolla <input type="checkbox" id="carModelCorolla" checked></label><br>
-                <label>Show Toyota Yaris   <input type="checkbox" id="carModelYaris" checked></label><br>
+                <?php
+                    require_once __DIR__ . '/../metadata/CarModels.php';
+                    $models = new CarModels();
+                    $models->onEach(function ($make, $model, $info) {
+                        echo "<label>Show $make $model <input type=\"checkbox\" id=\"carModel$make$model\" checked></label><br>";
+                    });
+                ?>
 
                 <p>Data segmenting</p>
                 <label>Segment by car model <input type="checkbox" id="segCarModel"></label>

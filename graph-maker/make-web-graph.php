@@ -14,7 +14,7 @@ function loadCSV($filename) {
     return $csv;
 }
 
-$csv = loadCSV($csvInputFile);
+$csv = loadCSV(__DIR__ . '/' . $csvInputFile);
 
 // make series
 
@@ -40,5 +40,8 @@ function makeSeries($bunchOfRows) {
 $series = makeSeries($csv);
 
 // render template
-$template = file_get_contents(__DIR__ . '/template.html');
+
+exec('php "' . __DIR__ . '/template.php"', $output);
+$template = implode("\n", $output);
+
 echo str_replace('DATA_GOES_HERE', $series, $template);

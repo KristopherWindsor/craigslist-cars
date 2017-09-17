@@ -6,4 +6,4 @@ php csv-maker/make-spreadsheet.php '../pages' | grep -v '""' > cars-all.csv
 cat cars-all.csv | grep -v 'greylisted' > cars.csv
 
 # Interactive Graph
-php make-web-graph.php "cars.csv" > render.html
+php graph-maker/make-web-graph.php "../cars.csv" > render.html
