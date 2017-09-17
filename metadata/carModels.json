@@ -12,6 +12,11 @@
         }
     },
     "Ford": {
+        "Explorer": {
+            "size": "mid-size",
+            "makeModelSearchTerm": "explorer",
+            "extraKeywords": []
+        },
         "Fiesta": {
             "size": "sub-compact",
             "makeModelSearchTerm": "fiesta",

@@ -30,7 +30,7 @@ function makeSeries($bunchOfRows) {
             ', modelYear: ' .         round($i['Model Year']) .
             ', vehicleTitle: "' .     $i['Vehicle Title'] . '"' .
             ', transmission: "' .     $i['Transmission'] . '"' .
-            ', mileage: ' .           round($i['Mileage'] / 1000) .
+            ', mileage: ' .           round($i['Mileage']) .
             ', myScore: ' .           round($i['My Score (miles + age)']) .
             ', price: ' .             round($i['Price']) .
             ', expectedPrice: ' .     round($i['Expected Price']) .

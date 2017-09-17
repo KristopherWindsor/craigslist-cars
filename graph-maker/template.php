@@ -28,33 +28,60 @@
             tmp = document.getElementById("filModel" + item.carMake + item.carModel).checked;
             if (!tmp)
                 continue;
-
-
-
-            tmp = document.getElementById("vehicleTitle").value;
+            tmp = document.getElementById("filModelSize").value;
+            if (tmp && item.modelSize != tmp)
+                continue;
+            tmp = document.getElementById("filModelYear").value;
+            if (tmp && "" + item.modelYear != tmp)
+                continue;
+            tmp = document.getElementById("filVehicleTitle").value;
             if (tmp && tmp != item.vehicleTitle)
                 continue;
-            tmp = document.getElementById("transmission").value;
+            tmp = document.getElementById("filTransmission").value;
             if (tmp && tmp != item.transmission)
                 continue;
+            tmp = parseFloat(document.getElementById("filMileageMin").value);
+            if (!isNaN(tmp) && tmp > item.mileage)
+                continue;
+            tmp = parseFloat(document.getElementById("filMileageMax").value);
+            if (!isNaN(tmp) && tmp < item.mileage)
+                continue;
+
+
 
             // Compute key (group name) for segmenting
             var key = '';
             if (document.getElementById("segLocation").checked) {
                 key = item.location;
             }
+            if (document.getElementById("segCarMake").checked) {
+                key += (key == "" ? "" : "+");
+                key += item.carMake;
+            }
             if (document.getElementById("segCarModel").checked) {
                 key += (key == "" ? "" : "+");
-                key = item.carModel;
+                key += item.carModel;
+            }
+            if (document.getElementById("segModelSize").checked) {
+                key += (key == "" ? "" : "+");
+                key += item.modelSize;
             }
             if (document.getElementById("segModelYear").checked) {
                 key += (key == "" ? "" : "+");
                 tmp = Math.floor(item.modelYear / 5) * 5;
                 key += tmp + "-" + (tmp + 4);
             }
+            if (document.getElementById("segVehicleTitle").checked) {
+                key += (key == "" ? "" : "+");
+                key += item.vehicleTitle;
+            }
+            if (document.getElementById("segTransmission").checked) {
+                key += (key == "" ? "" : "+");
+                key += item.transmission;
+            }
             if (document.getElementById("segMileage").checked) {
                 key += (key == "" ? "" : "+");
-                tmp = Math.floor(item.mileage / 50) * 50;
+                tmp = Math.floor(item.mileage / 50000) * 50;
                 key += tmp + "k-" + (tmp + 49) + "k";
             }
             if (key == "") {
@@ -152,35 +179,35 @@
 
                 <select id="filLocation">
                     <option value="">Filter by location...</option>
-                        <option>bakersfield</option>
-                        <option>chico</option>
-                        <option>fresno</option>
-                        <option>gold country</option>
-                        <option>hanford</option>
-                        <option>humboldt</option>
-                        <option>imperial co</option>
-                        <option>inland empire</option>
-                        <option>los angeles</option>
-                        <option>mendocino</option>
-                        <option>merced</option>
-                        <option>modesto</option>
-                        <option>monterey bay</option>
-                        <option>orange co</option>
-                        <option>palm springs</option>
-                        <option>redding</option>
-                        <option>reno</option>
-                        <option>sacramento</option>
-                        <option>san diego</option>
-                        <option>san luis obispo</option>
-                        <option>santa barbara</option>
-                        <option>santa maria</option>
-                        <option>SF bay area</option>
-                        <option>siskiyou</option>
-                        <option>stockton</option>
-                        <option>susanville</option>
-                        <option>ventura</option>
-                        <option>visalia-tulare</option>
-                        <option>yuba-sutter</option>
+                    <option>bakersfield</option>
+                    <option>chico</option>
+                    <option>fresno</option>
+                    <option>gold country</option>
+                    <option>hanford</option>
+                    <option>humboldt</option>
+                    <option>imperial co</option>
+                    <option>inland empire</option>
+                    <option>los angeles</option>
+                    <option>mendocino</option>
+                    <option>merced</option>
+                    <option>modesto</option>
+                    <option>monterey bay</option>
+                    <option>orange co</option>
+                    <option>palm springs</option>
+                    <option>redding</option>
+                    <option>reno</option>
+                    <option>sacramento</option>
+                    <option>san diego</option>
+                    <option>san luis obispo</option>
+                    <option>santa barbara</option>
+                    <option>santa maria</option>
+                    <option>SF bay area</option>
+                    <option>siskiyou</option>
+                    <option>stockton</option>
+                    <option>susanville</option>
+                    <option>ventura</option>
+                    <option>visalia-tulare</option>
+                    <option>yuba-sutter</option>
                 </select>
                 <input type="text" id="filPostTitle" placeholder="Filter by post title...">
                 <br>
@@ -191,27 +218,38 @@
                         echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
                     });
                 ?>
-
-
-
-                <select id="vehicleTitle">
+                <select id="filModelSize">
+                    <option value="">Filter by vehicle size...</option>
+                    <option>sub-compact</option>
+                    <option>compact</option>
+                    <option>mid-size</option>
+                    <option>full-size</option>
+                </select>
+                <input type="text" id="filModelYear" placeholder="Filter by model year...">
+                <select id="filVehicleTitle">
                     <option value="">Filter by car title...</option>
                     <option value="clean">Only show clean titles</option>
                     <option value="salvage">Only show salvage titles</option>
                 </select>
-                <select id="transmission">
+                <select id="filTransmission">
                     <option value="">Filter by transmission...</option>
                     <option value="automatic">Only show automatic transmissions</option>
                     <option value="manual">Only show manual transmissions</option>
                 </select>
+                <input type="text" id="filMileageMin" placeholder="Filter by milage (min)">
+                <input type="text" id="filMileageMax" placeholder="Filter by milage (max)">
 
                 <p>Data segmenting</p>
                 <label><input type="checkbox" id="segLocation"> Segment by location</label>
-                <label><input type="checkbox" id="segCarModel"> Segment by car make &amp; model</label>
-
-
-
+                <label><input type="checkbox" id="segCarMake"> Segment by car make</label>
+                <label><input type="checkbox" id="segCarModel"> Segment by car model</label>
+                <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
                 <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
+                <label><input type="checkbox" id="segVehicleTitle"> Segment by vehicle title</label>
+                <label><input type="checkbox" id="segTransmission"> Segment by transmission type</label>
+
+
+
                 <label><input type="checkbox" id="segMileage"> Segment by miles</label>
 
                 <br>
