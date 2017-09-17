@@ -4,7 +4,7 @@
 require_once __DIR__ . '/HtmlParser.php';
 require_once __DIR__ . '/../metadata/CarModels.php';
 
-$path = $argv[1];
+$pagesPath = dirname(__DIR__) . '/pages';
 
 // greylist.txt has Craigslist IDs or substrings of the filenames to greylist
 $greylist = @array_filter(explode("\n", file_get_contents(__DIR__ . '/greylist.txt') ?: ''));
@@ -15,11 +15,11 @@ function isGreyListed($filename, $greylist) {
     return false;
 }
 
-$dir = new DirectoryIterator(__DIR__ . '/' . $path);
+$dir = new DirectoryIterator($pagesPath);
 foreach ($dir as $fileinfo) {
     if (!$fileinfo->isDot() && $fileinfo->getFilename() != '.DS_Store') {
         go(
-            __DIR__ . '/' . $path . '/' . $fileinfo->getFilename(),
+            $pagesPath . '/' . $fileinfo->getFilename(),
             isGreyListed($fileinfo->getFilename(), $greylist)
         );
     }

@@ -2,7 +2,7 @@
 # php scraper/scrape.php
 
 # CSV Parser
-php csv-maker/make-spreadsheet.php '../pages' | grep -v '""' > cars-all.csv
+php csv-maker/make-spreadsheet.php | grep -v '""' > cars-all.csv
 cat cars-all.csv | grep -v 'greylisted' > cars.csv
 
 # Interactive Graph
