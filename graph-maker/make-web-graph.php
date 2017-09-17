@@ -21,17 +21,22 @@ $csv = loadCSV(__DIR__ . '/' . $csvInputFile);
 function makeSeries($bunchOfRows) {
     $dataPoints = [];
     foreach ($bunchOfRows as $i)
-        $dataPoints[] = '{x: ' . intval($i['My Score (miles + age)']) .
-            ', y: ' .       intval($i['Price']) .
-            ', postTitle: "' .     $i['Post Title'] . '"' .
-            ', carModel: "' .      $i['Car Model'] . '"' .
-            ', modelYear: "' .     $i['Model Year'] . '"' .
-            ', vehicleTitle: "' .  $i['Vehicle Title'] . '"' .
-            ', transmission: "' .  $i['Transmission'] . '"' .
-            ', mileage: ' . intval($i['Mileage'] / 1000) .
-            ', expectedPrice: "' . number_format($i['Expected Price']) . '"' .
-            ', firstImage: "' .    $i['First Image'] . '"' .
-            ', link: "' .          $i['Link'] . '"' .
+        $dataPoints[] =
+            '{ location: "' .         $i['Location'] . '"' .
+            ', postTitle: "' .        $i['Post Title'] . '"' .
+            ', carMake: "' .          $i['Car Make'] . '"' .
+            ', carModel: "' .         $i['Car Model'] . '"' .
+            ', modelSize: "' .        $i['Model Size'] . '"' .
+            ', modelYear: ' .         round($i['Model Year']) .
+            ', vehicleTitle: "' .     $i['Vehicle Title'] . '"' .
+            ', transmission: "' .     $i['Transmission'] . '"' .
+            ', mileage: ' .           round($i['Mileage'] / 1000) .
+            ', myScore: ' .           round($i['My Score (miles + age)']) .
+            ', price: ' .             round($i['Price']) .
+            ', expectedPrice: ' .     round($i['Expected Price']) .
+            ', priceLessExpected: ' . round($i['Price-Expected']) .
+            ', link: "' .             $i['Link'] . '"' .
+            ', firstImage: "' .       $i['First Image'] . '"' .
             '}';
 
     return implode(",\n", $dataPoints);

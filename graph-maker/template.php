@@ -3,6 +3,7 @@
 <head>
     <title>Craigslist cars for sale</title>
     <style>
+        body, html {margin: 0; padding: 0; max-width: 100vw; overflow-x: hidden;}
         fieldset p {font-weight: bold;}
         fieldset {position: relative;}
         button {position: absolute; right: 1em; bottom: 1em; font-size: 48pt; background: none;}
@@ -18,19 +19,32 @@
             item = allData[i];
 
             // Check filtering
+            tmp = document.getElementById("filLocation").value;
+            if (tmp && tmp != item.location)
+                continue;
+            tmp = document.getElementById("filPostTitle").value.toLowerCase();
+            if (tmp && !item.postTitle.toLowerCase().includes(tmp))
+                continue;
+            tmp = document.getElementById("filModel" + item.carMake + item.carModel).checked;
+            if (!tmp)
+                continue;
+
+
+
             tmp = document.getElementById("vehicleTitle").value;
             if (tmp && tmp != item.vehicleTitle)
                 continue;
             tmp = document.getElementById("transmission").value;
             if (tmp && tmp != item.transmission)
                 continue;
-            tmp = item.carModel;
-            if (item.carModel == "Fiesta" && !document.getElementById("carModelFordFiesta").checked)
-                continue;
 
             // Compute key (group name) for segmenting
             var key = '';
+            if (document.getElementById("segLocation").checked) {
+                key = item.location;
+            }
             if (document.getElementById("segCarModel").checked) {
+                key += (key == "" ? "" : "+");
                 key = item.carModel;
             }
             if (document.getElementById("segModelYear").checked) {
@@ -51,6 +65,8 @@
             if (!filteredData[key]) {
                 filteredData[key] = [];
             }
+            item.x = item.myScore;
+            item.y = item.price;
             filteredData[key].push(item);
         }
 
@@ -123,7 +139,7 @@
 <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
 <body>
-    <div id="chartContainer" style="height: 99vh; width: 99vw;">
+    <div id="chartContainer" style="height: 100vh">
     </div>
 
     <form>
@@ -132,6 +148,52 @@
                 <!-- <button onclick="updateGraph(); return false">Update graph</button> -->
 
                 <p>Data filtering</p>
+
+
+                <select id="filLocation">
+                    <option value="">Filter by location...</option>
+                        <option>bakersfield</option>
+                        <option>chico</option>
+                        <option>fresno</option>
+                        <option>gold country</option>
+                        <option>hanford</option>
+                        <option>humboldt</option>
+                        <option>imperial co</option>
+                        <option>inland empire</option>
+                        <option>los angeles</option>
+                        <option>mendocino</option>
+                        <option>merced</option>
+                        <option>modesto</option>
+                        <option>monterey bay</option>
+                        <option>orange co</option>
+                        <option>palm springs</option>
+                        <option>redding</option>
+                        <option>reno</option>
+                        <option>sacramento</option>
+                        <option>san diego</option>
+                        <option>san luis obispo</option>
+                        <option>santa barbara</option>
+                        <option>santa maria</option>
+                        <option>SF bay area</option>
+                        <option>siskiyou</option>
+                        <option>stockton</option>
+                        <option>susanville</option>
+                        <option>ventura</option>
+                        <option>visalia-tulare</option>
+                        <option>yuba-sutter</option>
+                </select>
+                <input type="text" id="filPostTitle" placeholder="Filter by post title...">
+                <br>
+                <?php
+                    require_once __DIR__ . '/../metadata/CarModels.php';
+                    $models = new CarModels();
+                    $models->onEach(function ($make, $model, $info) {
+                        echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
+                    });
+                ?>
+
+
+
                 <select id="vehicleTitle">
                     <option value="">Filter by car title...</option>
                     <option value="clean">Only show clean titles</option>
@@ -142,19 +204,15 @@
                     <option value="automatic">Only show automatic transmissions</option>
                     <option value="manual">Only show manual transmissions</option>
                 </select>
-                <br>
-                <?php
-                    require_once __DIR__ . '/../metadata/CarModels.php';
-                    $models = new CarModels();
-                    $models->onEach(function ($make, $model, $info) {
-                        echo "<label>Show $make $model <input type=\"checkbox\" id=\"carModel$make$model\" checked></label><br>";
-                    });
-                ?>
 
                 <p>Data segmenting</p>
-                <label>Segment by car model <input type="checkbox" id="segCarModel"></label>
-                <label>Segment by model year <input type="checkbox" id="segModelYear"></label>
-                <label>Segment by miles <input type="checkbox" id="segMileage"></label>
+                <label><input type="checkbox" id="segLocation"> Segment by location</label>
+                <label><input type="checkbox" id="segCarModel"> Segment by car make &amp; model</label>
+
+
+
+                <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
+                <label><input type="checkbox" id="segMileage"> Segment by miles</label>
 
                 <br>
                 <br>
