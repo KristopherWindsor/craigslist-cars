@@ -32,10 +32,7 @@ function makeSeries($bunchOfRows) {
             ', vehicleTitle: "' .     $i['Vehicle Title'] . '"' .
             ', transmission: "' .     $i['Transmission'] . '"' .
             ', mileage: ' .           round($i['Mileage']) .
-            ', myScore: ' .           round($i['My Score (miles + age)']) .
             ', price: ' .             round($i['Price']) .
-            ', expectedPrice: ' .     round($i['Expected Price']) .
-            ', priceLessExpected: ' . round($i['Price-Expected']) .
             ', link: "' .             $i['Link'] . '"' .
             ', firstImage: "' .       $i['First Image'] . '"' .
             '}';

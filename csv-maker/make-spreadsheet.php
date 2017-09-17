@@ -1,4 +1,4 @@
-"Location","Date Posted","Post Title","Car Make","Car Model","Model Size","Model Year","Vehicle Title","Transmission","Mileage","My Score (miles + age)","Price","Expected Price","Price-Expected","Link","File Link","First Image","Greylist"
+"Location","Date Posted","Post Title","Car Make","Car Model","Model Size","Model Year","Vehicle Title","Transmission","Mileage","Price","Link","File Link","First Image","Greylist"
 <?php
 
 require_once __DIR__ . '/HtmlParser.php';
@@ -74,9 +74,6 @@ function go($fileName, $isGreyListed) {
   if ($mileage > 500000)
       $isGreyListed = true;
 
-  // My Score
-  $myScore = $fields[] = (2018 - $year) * 5000 + $mileage;
-
   // Price
   $price = between($z, '<span class="price">$', '</span>')
       ?: (int) substr(strstr($z, '$'), 1);
@@ -85,15 +82,6 @@ function go($fileName, $isGreyListed) {
   if ($price < 30)
       $price *= 1000; // $5k or $8,000 (comma breaks parsing)
   $fields[] = $price;
-
-  // Expected Price
-  // This formula comes from logarithmic trendline based on observed data (of all car models being watched)
-  // It may change as we get more data, watch more car models, and filter out bad data (i.e. non-running cars)
-  $expectedPrice = max(100, (int) (66854 - 5142 * log($myScore)));
-  $fields[] = $expectedPrice;
-
-  // Price-Expected
-  $fields[] = $price - $expectedPrice;
 
   // Link
   $fields[] = between($z, '<link rel="canonical" href="', '">');
