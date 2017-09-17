@@ -62,8 +62,8 @@ function go($fileName, $isGreyListed) {
 
   // Mileage
   $mileage = between($z, '<span>odometer: <b>', '</b>');
-  if (!$mileage && strpos($z, 'k miles') > 0) {
-    $mileage = (int) filter_var(substr($z, strpos($z, 'k miles') - 4, 4), FILTER_SANITIZE_NUMBER_FLOAT);
+  if ($mileage <= 0 && strpos($z, 'k miles') > 0) {
+    $mileage = abs((int) filter_var(substr($z, strpos($z, 'k miles') - 4, 4), FILTER_SANITIZE_NUMBER_FLOAT));
   }
   if ($mileage < 500 && $year < 2017)
       $mileage *= 1000;

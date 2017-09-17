@@ -21,12 +21,22 @@
             "size": "compact",
             "makeModelSearchTerm": "focus",
             "extraKeywords": []
+        },
+        "Mustang": {
+            "size": "mid-size",
+            "makeModelSearchTerm": "mustang",
+            "extraKeywords": []
         }
     },
     "Honda": {
         "Accord": {
             "size": "mid-size",
             "makeModelSearchTerm": "accord",
+            "extraKeywords": []
+        },
+        "Civic": {
+            "size": "compact",
+            "makeModelSearchTerm": "civic",
             "extraKeywords": []
         },
         "Fit": {
