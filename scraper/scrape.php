@@ -43,7 +43,7 @@ $models->onEach(function ($make, $model, $info) use ($pagesDir, $scapeSites) {
             continue;
 
         $command = 'php "' . __DIR__ . '/scrape-rss.php" "' .
-            $site . 'search/cto?auto_make_model=' . $info['makeModelSearchTerm'] . '&format=rss" | ' .
+            $site . 'search/cto?auto_make_model=' . $info['makeModelSearchTerm'] . '&format=rss&sort=date" | ' .
             'php "' . __DIR__ . '/scrape-urls.php" "' . $pagesDir . '"';
         exec($command);
     }

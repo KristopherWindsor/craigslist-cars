@@ -1,17 +1,37 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML><?php require_once __DIR__ . '/../metadata/CarModels.php'; ?>
 <html>
 <head>
     <title>Craigslist cars for sale</title>
     <style>
         body, html {margin: 0; padding: 0; max-width: 100vw; overflow-x: hidden;}
+
         .controls {background-color: #d7dbf7; padding: 1em;}
         .controls p {font-weight: bold;}
         .controls select {width: 20em;}
-        .controls td {vertical-align: top;}
+        .controls td {vertical-align: top; padding-right: 2em;}
+
+        #filMakeModel {background-color: #fff; margin: 0; padding: .5em;}
+        #filMakeModel li {
+            list-style-type: none; display: inline-block; padding: 2px 4px;
+            border: 1px solid #ccc; margin: .4em; font-size: 14px;
+        }
+        #filMakeModel li:after {content: "\274C"; font-size: 10px; margin: 0 2px 0 .5em;}
+        #filMakeModel li:first-child:after {content: ""; display: none;}
+        #filMakeModel li:hover {cursor: pointer;}
+        #filMakeModel li:first-child:hover {cursor: default;}
+        #filMakeModel input {border: none;}
+
+        .segmenting label {display: inline-block;}
     </style>
     <script type="text/javascript">
 
     var allData = [ DATA_GOES_HERE ];
+
+    var makeModelFilters = {
+        showAll: false,
+        makes: {},
+        models: {}
+    };
 
     function updateGraph() {
         var filteredData = [], tmp, item;
@@ -64,8 +84,9 @@
             tmp = document.getElementById("filPostTitle").value.toLowerCase();
             if (tmp && !item.postTitle.toLowerCase().includes(tmp))
                 continue;
-            tmp = document.getElementById("filModel" + item.carMake + item.carModel).checked;
-            if (!tmp)
+            if (!makeModelFilters.showAll &&
+                !makeModelFilters.makes[item.carMake.toLowerCase()] &&
+                !makeModelFilters.models[item.carMake.toLowerCase() + " " + item.carModel.toLowerCase()])
                 continue;
             tmp = document.getElementById("filModelSize").value;
             if (tmp && item.modelSize != tmp)
@@ -230,16 +251,92 @@
         chart.render();
     }
 
-    window.onload = function () {
-        updateGraph();
+    function searchMakeAndModel() {
+        var searchTerm = document.getElementById("selectMakeAndModel").value.toUpperCase();
 
+        var addTagToDataModel = function (tagText) {
+            tagText = tagText.toLowerCase();
+
+            if (tagText == "all models") {
+                if (makeModelFilters.showAll)
+                    return false;
+                makeModelFilters.showAll = true;
+            } else if (tagText.indexOf('(all models)') > 0) {
+                var index = tagText.replace(" (all models)", "");
+                if (makeModelFilters.makes[index])
+                    return false;
+                makeModelFilters.makes[index] = true;
+            } else {
+                if (makeModelFilters.models[tagText])
+                    return false;
+                makeModelFilters.models[tagText] = true;
+            }
+            return true;
+        };
+
+        var removeTagFromDataModel = function (li) {
+            var tagText = li.innerHTML.toLowerCase();
+
+            if (tagText == "all models")
+                makeModelFilters.showAll = false;
+            else if (tagText.indexOf('(all models)') > 0) {
+                var index = tagText.replace(" (all models)", "");
+                makeModelFilters.makes[index] = false;
+            } else
+                makeModelFilters.models[tagText] = false;
+        };
+
+        // If it matches a search option, then add it to the search list
+        var makesAndModels = document.getElementById("makesAndModels"), found = false;
+        for (var i in makesAndModels.children) {
+            if (!makesAndModels.children[i].value)
+                continue;
+
+            var j = makesAndModels.children[i].value;
+            if (searchTerm == j.toUpperCase()) {
+                // Reset the search box
+                document.getElementById("selectMakeAndModel").value = "";
+
+                if (addTagToDataModel(j)) {
+                    // If adding anything, make sure "All models" tag is removed
+                    for (var k in document.getElementById("filMakeModel").children) {
+                        var kthChild = document.getElementById("filMakeModel").children[k];
+                        if (kthChild.innerHTML == "All models") {
+                            removeTagFromDataModel(kthChild);
+                            document.getElementById("filMakeModel").removeChild(kthChild);
+                        }
+                    }
+
+                    // Add the tag to the UI
+                    var entry = document.createElement('li');
+                    entry.appendChild(document.createTextNode(j));
+                    entry.onclick = function () {
+                        removeTagFromDataModel(entry);
+                        document.getElementById("filMakeModel").removeChild(entry);
+                        updateGraph();
+                    };
+                    document.getElementById("filMakeModel").appendChild(entry);
+
+                    // Update graph
+                    updateGraph();
+                }
+                return;
+            }
+        }
+    }
+
+    window.onload = function () {
         var elements = document.querySelectorAll('select');
         for (var i = 0; i < elements.length; i++)
             elements[i].onchange = updateGraph;
 
         elements = document.querySelectorAll('input');
         for (var i = 0; i < elements.length; i++)
-            elements[i].onchange = updateGraph;
+            if (elements[i].id != "selectMakeAndModel")
+                elements[i].onchange = updateGraph;
+
+        // Triggers a graph update
+        searchMakeAndModel();
     }
 </script>
 <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
@@ -299,7 +396,8 @@
                         </select>
                         <br><br>
                         <input type="text" id="filPostTitle" placeholder="Filter by post title...">
-                        <br><br>
+                    </td>
+                    <td>
                         <input type="text" id="filModelYear" placeholder="Filter by year...">
                         <br><br>
                         <select id="filVehicleTitle">
@@ -327,33 +425,48 @@
                             <option>mid-size</option>
                             <option>full-size</option>
                         </select>
-
                     </td>
                     <td>
+                        <div>Choose car makes and models to display...</div>
+                        <br>
 
-                        <?php
-                            require_once __DIR__ . '/../metadata/CarModels.php';
-                            $models = new CarModels();
-                            $models->onEach(function ($make, $model, $info) {
-                                echo "<label><input type=\"checkbox\" id=\"filModel$make$model\" checked> Show $make $model</label><br>";
-                            });
-                        ?>
+                        <datalist id="makesAndModels">
+                            <option value="All models">
+                            <?php
+                                $models = new CarModels();
+                                foreach ($models->getAllMakes() as $make) {
+                                    echo '<option value="' . $make . ' (all models)">';
+                                }
+                                $models->onEach(function ($make, $model, $info) {
+                                    echo '<option value="' . $make . ' ' . $model . '">';
+                                });
+                            ?>
+                        </datalist>
 
+                        <ul id="filMakeModel">
+                            <li>
+                                <input type="text" id="selectMakeAndModel" list="makesAndModels"
+                                    onInput="searchMakeAndModel()"
+                                    placeholder="Add item..." value="All models">
+                            </li>
+                        </ul>
                     </td>
                 </tr>
             </table>
 
             <p>Data segmenting</p>
-            <label><input type="checkbox" id="segLocation"> Segment by location</label>
-            <label><input type="checkbox" id="segDatePosted"> Segment by date of post</label>
-            <label><input type="checkbox" id="segCarMake"> Segment by car make</label>
-            <label><input type="checkbox" id="segCarModel"> Segment by car model</label>
-            <label><input type="checkbox" id="segModelYear"> Segment by model year</label>
-            <label><input type="checkbox" id="segVehicleTitle"> Segment by vehicle title</label>
-            <label><input type="checkbox" id="segTransmission"> Segment by transmission type</label>
-            <label><input type="checkbox" id="segMileage"> Segment by miles</label>
-            <label><input type="checkbox" id="segPrice"> Segment by price</label>
-            <label><input type="checkbox" id="segModelSize"> Segment by vehicle size</label>
+            <div class="segmenting">
+                <label><input type="checkbox" id="segLocation"> Post location</label>
+                <label><input type="checkbox" id="segDatePosted"> Date of post</label>
+                <label><input type="checkbox" id="segCarMake"> Car make</label>
+                <label><input type="checkbox" id="segCarModel"> Car model</label>
+                <label><input type="checkbox" id="segModelYear"> Model year</label>
+                <label><input type="checkbox" id="segVehicleTitle"> Vehicle title</label>
+                <label><input type="checkbox" id="segTransmission"> Transmission type</label>
+                <label><input type="checkbox" id="segMileage"> Mileage</label>
+                <label><input type="checkbox" id="segPrice"> Price</label>
+                <label><input type="checkbox" id="segModelSize"> Vehicle size</label>
+            </div>
 
             <p>Graph dimensions</p>
             X dimension:

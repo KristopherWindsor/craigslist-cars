@@ -27,6 +27,13 @@ class CarModels
 		}
 	}
 
+    public function getAllMakes()
+    {
+		foreach ($this->data as $make => $i) {
+			yield $make;
+		}
+    }
+
 	public function getInfo($carMake, $carModel)
 	{
 		return $this->data[$carMake][$carModel];
