@@ -6,6 +6,8 @@ require_once __DIR__ . '/../metadata/CarModels.php';
 
 $pagesPath = dirname(__DIR__) . '/pages';
 
+$carModels = new CarModels();
+
 // greylist.txt has Craigslist IDs or substrings of the filenames to greylist
 $greylist = @array_filter(explode("\n", file_get_contents(__DIR__ . '/greylist.txt') ?: ''));
 function isGreyListed($filename, $greylist) {
@@ -20,17 +22,17 @@ foreach ($dir as $fileinfo) {
     if (!$fileinfo->isDot() && $fileinfo->getFilename() != '.DS_Store') {
         go(
             $pagesPath . '/' . $fileinfo->getFilename(),
-            isGreyListed($fileinfo->getFilename(), $greylist)
+            isGreyListed($fileinfo->getFilename(), $greylist),
+            $carModels
         );
     }
 }
 
-function go($fileName, $isGreyListed) {
+function go($fileName, $isGreyListed, $carModels) {
   $fields = [];
-  $z = file_get_contents($fileName);
 
-  $carModels = new CarModels();
   $htmlParser = new HtmlParser($fileName, $carModels);
+  $z = $htmlParser->getHtml();
 
   // Location
   $fields[] = between($z, '<a href="/">', '</a>');

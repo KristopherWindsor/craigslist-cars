@@ -13,6 +13,11 @@ class HtmlParser
         $this->carModels = $carModels;
     }
 
+    public function getHtml()
+    {
+        return $this->html;
+    }
+
     public function getMakeAndModel()
     {
         $scores = [];
