@@ -1,6 +1,6 @@
 {
     "BMW": {
-        "3": {"makeModelSearchTerm": "bmw"},
+        "3": {},
         "4": {},
         "5": {},
         "6": {},
@@ -22,83 +22,78 @@
     },
     "Chevrolet": {
         "Sonic": {
-            "makeModelSearchTerm": "sonic",
             "extraKeywords": []
         },
         "Spark": {
-            "makeModelSearchTerm": "spark",
             "extraKeywords": []
         }
     },
     "Ford": {
         "Explorer": {
-            "makeModelSearchTerm": "explorer",
             "extraKeywords": []
         },
         "Fiesta": {
-            "makeModelSearchTerm": "fiesta",
             "extraKeywords": []
         },
         "Focus": {
-            "makeModelSearchTerm": "focus",
             "extraKeywords": []
         },
         "Mustang": {
-            "makeModelSearchTerm": "mustang",
             "extraKeywords": []
         }
     },
     "Honda": {
         "Accord": {
-            "makeModelSearchTerm": "accord",
             "extraKeywords": []
         },
         "Civic": {
-            "makeModelSearchTerm": "civic",
             "extraKeywords": []
         },
         "Fit": {
-            "makeModelSearchTerm": "honda+fit",
             "extraKeywords": []
         }
     },
     "Hyundai": {
         "Elantra": {
-            "makeModelSearchTerm": "elantra",
             "extraKeywords": []
         }
     },
     "Mini": {
         "Clubman": {
-            "makeModelSearchTerm": "mini+clubman",
             "extraKeywords": []
         },
         "Cooper": {
-            "makeModelSearchTerm": "mini+cooper",
             "extraKeywords": []
         },
         "Countryman": {
-            "makeModelSearchTerm": "mini+countryman",
             "extraKeywords": []
         }
     },
     "Toyota": {
-        "Corolla": {
-            "makeModelSearchTerm": "corolla",
-            "extraKeywords": []
-        },
-        "Prius": {
-            "makeModelSearchTerm": "prius",
-            "extraKeywords": []
-        },
-        "Yaris": {
-            "makeModelSearchTerm": "yaris",
-            "extraKeywords": []
-        }
+        "4Runner": {},
+        "86": {},
+        "Avalon": {},
+        "C-HR": {},
+        "Camry": {},
+        "Corolla": {},
+        "Corolla iM": {},
+        "Highlander": {},
+        "Land Cruiser": {},
+        "Mirai": {},
+        "Prius": {},
+        "Prius c": {},
+        "Prius Prime": {},
+        "Prius v": {},
+        "RAV4": {},
+        "Sequoia": {},
+        "Sienna": {},
+        "Tacoma": {},
+        "Tundra": {},
+        "Yaris": {},
+        "Yaris iA": {}
     },
     "Volkswagen": {
         "Vanagon": {
-            "makeModelSearchTerm": "vanagon",
             "extraKeywords": []
         }
     }

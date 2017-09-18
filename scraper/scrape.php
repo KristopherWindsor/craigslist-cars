@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../metadata/CarModels.php';
-
 $pagesDir = dirname(__DIR__) . '/pages';
 
 $scapeSites = [
@@ -36,15 +34,28 @@ $scapeSites = [
     'https://yubasutter.craigslist.org/',
 ];
 
-$models = new CarModels();
-$models->onEach(function ($make, $model, $info) use ($pagesDir, $scapeSites) {
-    foreach ($scapeSites as $site) {
-        if (empty($info['makeModelSearchTerm']))
-            continue;
+$scrapeTerms = [
+    'bmw',
+    'sonic',
+    'spark',
+    'explorer',
+    'fiesta',
+    'focus',
+    'mustang',
+    'accord',
+    'civic',
+    'honda+fit',
+    'elantra',
+    'mini',
+    'toyota',
+    'vanagon',
+];
 
+foreach ($scapeSites as $site) {
+    foreach ($scrapeTerms as $term) {
         $command = 'php "' . __DIR__ . '/scrape-rss.php" "' .
-            $site . 'search/cto?auto_make_model=' . $info['makeModelSearchTerm'] . '&format=rss&sort=date" | ' .
+            $site . 'search/cto?auto_make_model=' . $term . '&format=rss&sort=date" | ' .
             'php "' . __DIR__ . '/scrape-urls.php" "' . $pagesDir . '"';
         exec($command);
     }
-});
+}
