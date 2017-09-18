@@ -42,7 +42,7 @@
             "modelYear": "Model year",
             "price": "Price",
             "fn1": "Fn1: Mileage + 5000 mi. per year old",
-            "fn2": "Expected price based on fn1"
+            "fn2": "Fn2: Expected price based on fn1"
         };
         var dimensionFns = {
             "mileage": function (item) {
@@ -477,7 +477,7 @@
                 <option value="price">Price</option>
 
                 <option value="fn1">Fn1: Mileage + 5000 mi. per year old</option>
-                <option value="fn2">fn2": "Expected price based on fn1</option>
+                <option value="fn2">Fn2: Expected price based on fn1</option>
             </select>
             <br>
             Y dimension:
