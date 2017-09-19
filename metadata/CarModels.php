@@ -6,14 +6,18 @@ class CarModels
 
 	public function __construct()
 	{
-		$this->data = json_decode(file_get_contents(__DIR__ . '/carModels.json'), true);
+		$x = json_decode(file_get_contents(__DIR__ . '/carModels.json'), true);
+		$this->data = array_map(
+			function ($i) {return array_combine($i, $i);},
+			$x
+		);
 	}
 
 	public function onEach(callable $callback)
 	{
 		foreach ($this->data as $make => $i) {
-			foreach ($i as $model => $info) {
-				$callback($make, $model, $info);
+			foreach ($i as $model) {
+				$callback($make, $model);
 			}
 		}
 	}
@@ -21,8 +25,8 @@ class CarModels
 	public function getAll()
 	{
 		foreach ($this->data as $make => $i) {
-			foreach ($i as $model => $info) {
-				yield [$make, $model, $info];
+			foreach ($i as $model) {
+				yield [$make, $model];
 			}
 		}
 	}
@@ -33,9 +37,4 @@ class CarModels
 			yield $make;
 		}
     }
-
-	public function getInfo($carMake, $carModel)
-	{
-		return $this->data[$carMake][$carModel];
-	}
 }

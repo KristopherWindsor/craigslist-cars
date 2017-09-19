@@ -36,19 +36,14 @@ $scapeSites = [
 
 $scrapeTerms = [
     'bmw',
-    'sonic',
-    'spark',
-    'explorer',
-    'fiesta',
-    'focus',
-    'mustang',
-    'accord',
-    'civic',
-    'honda+fit',
-    'elantra',
+    'chevy',
+    'ford',
+    'honda',
+    'hyundai',
+    'mazda',
     'mini',
     'toyota',
-    'vanagon',
+    'volkswagen',
 ];
 
 foreach ($scapeSites as $site) {

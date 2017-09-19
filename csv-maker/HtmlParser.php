@@ -23,7 +23,7 @@ class HtmlParser
         $scores = [];
         $postTitle = $this->getPostTitle();
 
-        foreach ($this->carModels->getAll() as list($make, $model, $info)) {
+        foreach ($this->carModels->getAll() as list($make, $model)) {
             $score = 0;
 
             // Search make + model (consecutive words)
@@ -54,7 +54,7 @@ class HtmlParser
 
     public function getPostTitle()
     {
-        return html_entity_decode($this->between($z, '<span id="titletextonly">', '</span>'));
+        return html_entity_decode($this->between($this->html, '<span id="titletextonly">', '</span>'));
     }
 
     private function between($string, $startText, $endText) {

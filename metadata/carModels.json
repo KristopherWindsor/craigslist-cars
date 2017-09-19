@@ -1,100 +1,90 @@
 {
-    "BMW": {
-        "3": {},
-        "4": {},
-        "5": {},
-        "6": {},
-        "7": {},
-        "M2": {},
-        "M3": {},
-        "M4": {},
-        "M5": {},
-        "M6": {},
-        "X1": {},
-        "X3": {},
-        "X4": {},
-        "X5": {},
-        "X6": {},
-        "Z3": {},
-        "Z4": {},
-        "i3": {},
-        "i8": {}
-    },
-    "Chevrolet": {
-        "Sonic": {
-            "extraKeywords": []
-        },
-        "Spark": {
-            "extraKeywords": []
-        }
-    },
-    "Ford": {
-        "Explorer": {
-            "extraKeywords": []
-        },
-        "Fiesta": {
-            "extraKeywords": []
-        },
-        "Focus": {
-            "extraKeywords": []
-        },
-        "Mustang": {
-            "extraKeywords": []
-        }
-    },
-    "Honda": {
-        "Accord": {
-            "extraKeywords": []
-        },
-        "Civic": {
-            "extraKeywords": []
-        },
-        "Fit": {
-            "extraKeywords": []
-        }
-    },
-    "Hyundai": {
-        "Elantra": {
-            "extraKeywords": []
-        }
-    },
-    "Mini": {
-        "Clubman": {
-            "extraKeywords": []
-        },
-        "Cooper": {
-            "extraKeywords": []
-        },
-        "Countryman": {
-            "extraKeywords": []
-        }
-    },
-    "Toyota": {
-        "4Runner": {},
-        "86": {},
-        "Avalon": {},
-        "C-HR": {},
-        "Camry": {},
-        "Corolla": {},
-        "Corolla iM": {},
-        "Highlander": {},
-        "Land Cruiser": {},
-        "Mirai": {},
-        "Prius": {},
-        "Prius c": {},
-        "Prius Prime": {},
-        "Prius v": {},
-        "RAV4": {},
-        "Sequoia": {},
-        "Sienna": {},
-        "Tacoma": {},
-        "Tundra": {},
-        "Yaris": {},
-        "Yaris iA": {}
-    },
-    "Volkswagen": {
-        "Vanagon": {
-            "extraKeywords": []
-        }
-    }
+    "BMW": [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "X1",
+        "X3",
+        "X4",
+        "X5",
+        "X6",
+        "Z3",
+        "Z4",
+        "i3",
+        "i8"
+    ],
+    "Chevrolet": [
+        "Bolt",
+        "Bolt EV",
+        "Camaro",
+        "City Express",
+        "Colorado",
+        "Corvette",
+        "Cruze",
+        "Equinox",
+        "Express",
+        "Impala",
+        "Malibu",
+        "Silverado",
+        "Sonic",
+        "Spark",
+        "SS",
+        "Suburban",
+        "Tahoe",
+        "Traverse",
+        "Trax",
+        "Volt"
+    ],
+    "Ford": [
+        "Explorer",
+        "Fiesta",
+        "Focus",
+        "Mustang"
+    ],
+    "Honda": [
+        "Accord",
+        "Civic",
+        "Fit"
+    ],
+    "Hyundai": [
+        "Elantra"
+    ],
+    "Mini": [
+        "Clubman",
+        "Cooper",
+        "Countryman"
+    ],
+    "Toyota": [
+        "4Runner",
+        "86",
+        "Avalon",
+        "C-HR",
+        "Camry",
+        "Corolla",
+        "Corolla iM",
+        "Highlander",
+        "Land Cruiser",
+        "Mirai",
+        "Prius",
+        "Prius c",
+        "Prius Prime",
+        "Prius v",
+        "RAV4",
+        "Sequoia",
+        "Sienna",
+        "Tacoma",
+        "Tundra",
+        "Yaris",
+        "Yaris iA"
+    ],
+    "Volkswagen": [
+        "Vanagon"
+    ]
 }

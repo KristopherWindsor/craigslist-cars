@@ -437,7 +437,7 @@
                                 foreach ($models->getAllMakes() as $make) {
                                     echo '<option value="' . $make . ' (all models)">';
                                 }
-                                $models->onEach(function ($make, $model, $info) {
+                                $models->onEach(function ($make, $model) {
                                     echo '<option value="' . $make . ' ' . $model . '">';
                                 });
                             ?>
