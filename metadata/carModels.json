@@ -43,18 +43,65 @@
         "Volt"
     ],
     "Ford": [
+        "C-Max",
+        "Ecosport",
+        "Edge",
+        "Escape",
+        "Expedition",
         "Explorer",
+        "F-150",
+        "F-250",
+        "F-350",
+        "F-650",
+        "F-750",
         "Fiesta",
+        "Flex",
         "Focus",
-        "Mustang"
+        "Fusion",
+        "Mustang",
+        "Taurus",
+        "Transit"
     ],
     "Honda": [
         "Accord",
+        "Clarity",
         "Civic",
-        "Fit"
+        "Civic Type R",
+        "CR-V",
+        "Fit",
+        "HR-V",
+        "Odyssey",
+        "Pilot",
+        "Ridgeline"
     ],
     "Hyundai": [
-        "Elantra"
+        "Accent",
+        "Azera",
+        "Elantra",
+        "Genesis",
+        "Ionic",
+        "Santa Fe",
+        "Sonata",
+        "Tucson",
+        "Veloster"
+    ],
+    "Mazda": [
+        "3",
+        "6",
+        "AZ-Wagon",
+        "B2300",
+        "Bongo",
+        "CX-3",
+        "CX-5",
+        "CX-9",
+        "E2000",
+        "Miata",
+        "MX-5 Miata",
+        "MX-5 Miata RF",
+        "MX-6",
+        "RX-7",
+        "T3000",
+        "Titan"
     ],
     "Mini": [
         "Clubman",
@@ -85,6 +132,16 @@
         "Yaris iA"
     ],
     "Volkswagen": [
+        "Atlas",
+        "Beetle",
+        "CC",
+        "e-Golf",
+        "Golf",
+        "Golf R",
+        "Jetta",
+        "Passat",
+        "Tiguan",
+        "Touareg",
         "Vanagon"
     ]
 }
