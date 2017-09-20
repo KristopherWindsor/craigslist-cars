@@ -1,4 +1,4 @@
-<!DOCTYPE HTML><?php require_once __DIR__ . '/../metadata/CarModels.php'; ?>
+<!DOCTYPE HTML><?php require_once __DIR__ . '/../metadata/CarModels.php'; require_once __DIR__ . '/../metadata/CraigslistSites.php'; ?>
 <html>
 <head>
     <title>Craigslist cars for sale</title>
@@ -10,16 +10,16 @@
         .controls select {width: 20em;}
         .controls td {vertical-align: top; padding-right: 2em;}
 
-        #filMakeModel {background-color: #fff; margin: 0; padding: .5em;}
-        #filMakeModel li {
+        .tagList {background-color: #fff; margin: 0; padding: .5em; max-width: 30vw;}
+        .tagList li {
             list-style-type: none; display: inline-block; padding: 2px 4px;
             border: 1px solid #ccc; margin: .4em; font-size: 14px;
         }
-        #filMakeModel li:after {content: "\274C"; font-size: 10px; margin: 0 2px 0 .5em;}
-        #filMakeModel li:first-child:after {content: ""; display: none;}
-        #filMakeModel li:hover {cursor: pointer;}
-        #filMakeModel li:first-child:hover {cursor: default;}
-        #filMakeModel input {border: none;}
+        .tagList li:after {content: "\274C"; font-size: 10px; margin: 0 2px 0 .5em;}
+        .tagList li:first-child:after {content: ""; display: none;}
+        .tagList li:hover {cursor: pointer;}
+        .tagList li:first-child:hover {cursor: default;}
+        .tagList input {border: none;}
 
         .segmenting label {display: inline-block;}
     </style>
@@ -31,6 +31,12 @@
         showAll: false,
         makes: {},
         models: {}
+    };
+
+    var locationFilters = {
+        showAll: false,
+        states: {},
+        locations: {}
     };
 
     function updateGraph() {
@@ -72,8 +78,9 @@
             item = allData[i];
 
             // Check filtering
-            tmp = document.getElementById("filLocation").value;
-            if (tmp && tmp != item.location)
+            if (!locationFilters.showAll &&
+                !locationFilters.states[item.locationState.toLowerCase()] &&
+                !locationFilters.locations[item.location.toLowerCase()])
                 continue;
             tmp = document.getElementById("filPostDate").value;
             if (tmp) {
@@ -190,7 +197,8 @@
             }
             if (key == "") {
                 key = "All cars";
-            }
+            } else if (key == "keys")
+                key = "keys ";
 
             // Group items for segmenting
             if (!filteredData[key]) {
@@ -254,13 +262,88 @@
         chart.render();
     }
 
+    function searchLocation(skipGraphUpdate) {
+        var searchTerm = document.getElementById("selectLocation").value.toUpperCase();
+
+        var addTagToDataModel = function (tagText) {
+            tagText = tagText.toLowerCase();
+
+            if (tagText == "show all") {
+                if (locationFilters.showAll)
+                    return false;
+                locationFilters.showAll = true;
+            } else if (tagText.indexOf('(all)') > 0) {
+                var index = tagText.replace(" (all)", "");
+                if (locationFilters.states[index])
+                    return false;
+                locationFilters.states[index] = true;
+            } else {
+                if (locationFilters.locations[tagText])
+                    return false;
+                locationFilters.locations[tagText] = true;
+            }
+            return true;
+        };
+
+        var removeTagFromDataModel = function (li) {
+            var tagText = li.innerHTML.toLowerCase();
+
+            if (tagText == "show all")
+                locationFilters.showAll = false;
+            else if (tagText.indexOf('(all)') > 0) {
+                var index = tagText.replace(" (all)", "");
+                locationFilters.states[index] = false;
+            } else
+                locationFilters.locations[tagText] = false;
+        };
+
+        // If it matches a search option, then add it to the search list
+        var datalistElement = document.getElementById("locations"), found = false;
+        for (var i in datalistElement.children) {
+            if (!datalistElement.children[i].value)
+                continue;
+
+            var j = datalistElement.children[i].value;
+            if (searchTerm == j.toUpperCase()) {
+                // Reset the search box
+                document.getElementById("selectLocation").value = "";
+
+                if (addTagToDataModel(j)) {
+                    // If adding anything, make sure "Show all" tag is removed
+                    for (var k in document.getElementById("filLocation").children) {
+                        var kthChild = document.getElementById("filLocation").children[k];
+                        if (kthChild.innerHTML == "Show all") {
+                            removeTagFromDataModel(kthChild);
+                            document.getElementById("filLocation").removeChild(kthChild);
+                        }
+                    }
+
+                    // Add the tag to the UI
+                    var entry = document.createElement('li');
+                    entry.appendChild(document.createTextNode(j));
+                    entry.onclick = function () {
+                        removeTagFromDataModel(entry);
+                        document.getElementById("filLocation").removeChild(entry);
+                        updateGraph();
+                    };
+                    document.getElementById("filLocation").appendChild(entry);
+
+                    // Update graph
+                    if (!skipGraphUpdate)
+                        updateGraph();
+                }
+                return;
+            }
+        }
+    }
+
     function searchMakeAndModel() {
         var searchTerm = document.getElementById("selectMakeAndModel").value.toUpperCase();
 
         var addTagToDataModel = function (tagText) {
             tagText = tagText.toLowerCase();
 
-            if (tagText == "all models") {
+            if (tagText == "show all") {
                 if (makeModelFilters.showAll)
                     return false;
                 makeModelFilters.showAll = true;
@@ -280,7 +363,7 @@
         var removeTagFromDataModel = function (li) {
             var tagText = li.innerHTML.toLowerCase();
 
-            if (tagText == "all models")
+            if (tagText == "show all")
                 makeModelFilters.showAll = false;
             else if (tagText.indexOf('(all models)') > 0) {
                 var index = tagText.replace(" (all models)", "");
@@ -290,21 +373,21 @@
         };
 
         // If it matches a search option, then add it to the search list
-        var makesAndModels = document.getElementById("makesAndModels"), found = false;
-        for (var i in makesAndModels.children) {
-            if (!makesAndModels.children[i].value)
+        var datalistElement = document.getElementById("makesAndModels"), found = false;
+        for (var i in datalistElement.children) {
+            if (!datalistElement.children[i].value)
                 continue;
 
-            var j = makesAndModels.children[i].value;
+            var j = datalistElement.children[i].value;
             if (searchTerm == j.toUpperCase()) {
                 // Reset the search box
                 document.getElementById("selectMakeAndModel").value = "";
 
                 if (addTagToDataModel(j)) {
-                    // If adding anything, make sure "All models" tag is removed
+                    // If adding anything, make sure "Show all" tag is removed
                     for (var k in document.getElementById("filMakeModel").children) {
                         var kthChild = document.getElementById("filMakeModel").children[k];
-                        if (kthChild.innerHTML == "All models") {
+                        if (kthChild.innerHTML == "Show all") {
                             removeTagFromDataModel(kthChild);
                             document.getElementById("filMakeModel").removeChild(kthChild);
                         }
@@ -335,10 +418,11 @@
 
         elements = document.querySelectorAll('input');
         for (var i = 0; i < elements.length; i++)
-            if (elements[i].id != "selectMakeAndModel")
+            if (elements[i].id != "selectMakeAndModel" && elements[i].id != "selectLocation")
                 elements[i].onchange = updateGraph;
 
         // Triggers a graph update
+        searchLocation(true);
         searchMakeAndModel();
     }
 </script>
@@ -355,38 +439,7 @@
             <table>
                 <tr>
                     <td>
-                        <select id="filLocation">
-                            <option value="">Filter by location...</option>
-                            <option>bakersfield</option>
-                            <option>chico</option>
-                            <option>fresno</option>
-                            <option>gold country</option>
-                            <option>hanford</option>
-                            <option>humboldt</option>
-                            <option>imperial co</option>
-                            <option>inland empire</option>
-                            <option>los angeles</option>
-                            <option>mendocino</option>
-                            <option>merced</option>
-                            <option>modesto</option>
-                            <option>monterey bay</option>
-                            <option>orange co</option>
-                            <option>palm springs</option>
-                            <option>redding</option>
-                            <option>reno</option>
-                            <option>sacramento</option>
-                            <option>san diego</option>
-                            <option>san luis obispo</option>
-                            <option>santa barbara</option>
-                            <option>santa maria</option>
-                            <option>SF bay area</option>
-                            <option>siskiyou</option>
-                            <option>stockton</option>
-                            <option>susanville</option>
-                            <option>ventura</option>
-                            <option>visalia-tulare</option>
-                            <option>yuba-sutter</option>
-                        </select>
+                        <input type="text" id="filPostTitle" placeholder="Filter by post title...">
                         <br><br>
                         <select id="filPostDate">
                             <option value="">Filter by date of post...</option>
@@ -398,7 +451,29 @@
                             <option value="336">Last 14 days</option>
                         </select>
                         <br><br>
-                        <input type="text" id="filPostTitle" placeholder="Filter by post title...">
+
+                        <div>Filter by location (state or site)...</div>
+                        <br>
+                        <datalist id="locations">
+                            <option value="Show all">
+                            <?php
+                                $craigslistSites = new CraigslistSites();
+                                foreach ($craigslistSites->getAllStates() as $state) {
+                                    echo '<option value="' . $state . ' (all)">';
+                                }
+                                foreach ($craigslistSites->getAllSiteUrls() as $url) {
+                                    $shortLocation = $craigslistSites->convertUrlToShortLocation($url);
+                                    echo '<option value="' . $shortLocation . '">';
+                                }
+                            ?>
+                        </datalist>
+                        <ul id="filLocation" class="tagList">
+                            <li>
+                                <input type="text" id="selectLocation" list="locations"
+                                    onInput="searchLocation()"
+                                    placeholder="Add item..." value="Show all">
+                            </li>
+                        </ul>
                     </td>
                     <td>
                         <input type="text" id="filModelYearMin" placeholder="Filter by year (min)...">
@@ -433,9 +508,8 @@
                     <td>
                         <div>Choose car makes and models to display...</div>
                         <br>
-
                         <datalist id="makesAndModels">
-                            <option value="All models">
+                            <option value="Show all">
                             <?php
                                 $models = new CarModels();
                                 foreach ($models->getAllMakes() as $make) {
@@ -446,12 +520,11 @@
                                 });
                             ?>
                         </datalist>
-
-                        <ul id="filMakeModel">
+                        <ul id="filMakeModel" class="tagList">
                             <li>
                                 <input type="text" id="selectMakeAndModel" list="makesAndModels"
                                     onInput="searchMakeAndModel()"
-                                    placeholder="Add item..." value="All models">
+                                    placeholder="Add item..." value="Show all">
                             </li>
                         </ul>
                     </td>

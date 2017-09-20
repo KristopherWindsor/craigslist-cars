@@ -9,7 +9,7 @@ $scrapeTerms = [
     //'chevrolet',
     //'chevy',
     'ford',
-    //'honda',
+    'honda',
     //'hyundai',
     //'mazda',
     //'mini',

@@ -18,9 +18,20 @@ class CraigslistSites
                 $this->urlToStateMap[$item] = $state;
     }
 
+    public function getAllStates()
+    {
+        foreach ($this->data as $state => $list)
+            yield $state;
+    }
+
     public function convertShortLocationToUrl($location)
     {
         return "https://$location.craigslist.org/";
+    }
+
+    public function convertUrlToShortLocation($url)
+    {
+        return str_replace(['https://', '.craigslist.org/'], '', $url);
     }
 
     public function getAllSiteUrls()

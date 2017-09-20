@@ -86,7 +86,6 @@
         "https://washingtondc.craigslist.org/"
     ],
     "Florida": [
-        "http://miami.craigslist.org/brw/",
         "https://daytona.craigslist.org/",
         "https://keys.craigslist.org/",
         "https://fortlauderdale.craigslist.org/",
@@ -95,7 +94,6 @@
         "https://cfl.craigslist.org/",
         "https://jacksonville.craigslist.org/",
         "https://lakeland.craigslist.org/",
-        "http://miami.craigslist.org/mdc/",
         "https://lakecity.craigslist.org/",
         "https://ocala.craigslist.org/",
         "https://okaloosa.craigslist.org/",
@@ -108,8 +106,7 @@
         "https://staugustine.craigslist.org/",
         "https://tallahassee.craigslist.org/",
         "https://tampa.craigslist.org/",
-        "https://treasure.craigslist.org/",
-        "http://miami.craigslist.org/pbc/"
+        "https://treasure.craigslist.org/"
     ],
     "Georgia": [
         "https://albanyga.craigslist.org/",

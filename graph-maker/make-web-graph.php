@@ -1,5 +1,7 @@
 <?php
 
+ini_set('memory_limit', '512M');
+
 $csvInputFile = $argv[1];
 
 // load CSV
@@ -23,6 +25,7 @@ function makeSeries($bunchOfRows) {
     foreach ($bunchOfRows as $i)
         $dataPoints[] =
             '{ location: "' .         $i['Location'] . '"' .
+            ', locationState: "' .    $i['Location State'] . '"' .
             ', datePosted: "' .       $i['Date Posted'] . '"' .
             ', postTitle: "' .        $i['Post Title'] . '"' .
             ', carMake: "' .          $i['Car Make'] . '"' .

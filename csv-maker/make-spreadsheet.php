@@ -92,14 +92,16 @@ function go($fileName, $isGreyListed, CarModels $carModels, CraigslistSites $cra
   if ($mileage > 500000)
       $isGreyListed = true;
 
-  // Price
-  $price = between($z, '<span class="price">$', '</span>')
-      ?: (int) substr(strstr($z, '$'), 1);
-  if ($price <= 1)
-      $isGreyListed = true;
-  if ($price < 30)
-      $price *= 1000; // $5k or $8,000 (comma breaks parsing)
-  $fields[] = $price;
+    // Price
+    $price = between($z, '<span class="price">$', '</span>')
+        ?: (int) substr(strstr($z, '$'), 1);
+    if ($price <= 1)
+        $isGreyListed = true;
+    if ($price < 30)
+        $price *= 1000; // $5k or $8,000 (comma breaks parsing)
+    if ($price > 200000)
+        $isGreyListed = true;
+    $fields[] = $price;
 
   // Link
   $fields[] = between($z, '<link rel="canonical" href="', '">');
