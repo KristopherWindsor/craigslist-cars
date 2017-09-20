@@ -5,7 +5,8 @@ require_once __DIR__ . '/HtmlParser.php';
 require_once __DIR__ . '/../metadata/CarModels.php';
 require_once __DIR__ . '/../metadata/CraigslistSites.php';
 
-$pagesPath = dirname(__DIR__) . '/pages';
+$pagesPath = dirname(__DIR__) . '/pages/';
+$cachePath = __DIR__ . '/cache/';
 
 $carModels = new CarModels();
 $craigslistSites = new CraigslistSites();
@@ -24,12 +25,19 @@ $count = 0;
 foreach ($dir as $fileinfo) {
     if (!$fileinfo->isDot() && $fileinfo->getFilename() != '.DS_Store') {
         $count++;
-        go(
-            $pagesPath . '/' . $fileinfo->getFilename(),
-            isGreyListed($fileinfo->getFilename(), $greylist),
-            $carModels,
-            $craigslistSites
-        );
+        $cacheFile = str_replace('.html', '.csv', $cachePath . $fileinfo->getFilename());
+        if (file_exists($cacheFile)) {
+            readfile($cacheFile);
+        } else {
+            $line = go(
+                $pagesPath . $fileinfo->getFilename(),
+                isGreyListed($fileinfo->getFilename(), $greylist),
+                $carModels,
+                $craigslistSites
+            );
+            file_put_contents($cacheFile, $line);
+            echo $line;
+        }
     }
 }
 
@@ -40,7 +48,7 @@ function go($fileName, $isGreyListed, CarModels $carModels, CraigslistSites $cra
   $z = $htmlParser->getHtml();
 
   // Location
-  $location = between($z, '<link rel="canonical" href="https://', '.craigslist');
+  $location = $htmlParser->getCraigslistLocation();
   $fields[] = $location;
 
   // Location State
@@ -107,9 +115,10 @@ function go($fileName, $isGreyListed, CarModels $carModels, CraigslistSites $cra
   // Greylist
   $fields[] = $isGreyListed ? 'greylisted' : 'ok';
 
+  $return = '';
   foreach ($fields as $index => $field)
-      echo ($index ? ',' : '') . '"' . addslashes($field) . '"';
-  echo "\n";
+      $return .= ($index ? ',' : '') . '"' . addslashes($field) . '"';
+  return $return . "\n";
 }
 
 function between($string, $startText, $endText) {

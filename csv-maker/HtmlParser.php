@@ -52,18 +52,23 @@ class HtmlParser
             return explode(':', $makeModel);
     }
 
-    public function getPostTitle()
+    public function getCraigslistLocation()
     {
-        return html_entity_decode($this->between($this->html, '<span id="titletextonly">', '</span>'));
+        return $this->between('<link rel="canonical" href="https://', '.craigslist');
     }
 
-    private function between($string, $startText, $endText) {
-        $a = strpos($string, $startText) + strlen($startText);
+    public function getPostTitle()
+    {
+        return html_entity_decode($this->between('<span id="titletextonly">', '</span>'));
+    }
+
+    private function between($startText, $endText) {
+        $a = strpos($this->html, $startText) + strlen($startText);
         if ($a <= strlen($startText)) return '';
 
-        $b = strpos($string, $endText, $a + 2);
+        $b = strpos($this->html, $endText, $a + 2);
         if ($b <= 0) return '';
 
-        return substr($string, $a, $b - $a);
+        return substr($this->html, $a, $b - $a);
     }
 }
