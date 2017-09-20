@@ -130,6 +130,10 @@
             if (document.getElementById("segLocation").checked) {
                 key = item.location;
             }
+            if (document.getElementById("segLocationState").checked) {
+                key += (key == "" ? "" : "+");
+                key += item.locationState;
+            }
             if (document.getElementById("segDatePosted").checked) {
                 key += (key == "" ? "" : "+");
                 tmp = (Date.now() - (new Date(item.datePosted))) / 1000 / 3600;
@@ -533,7 +537,8 @@
 
             <p>Data segmenting</p>
             <div class="segmenting">
-                <label><input type="checkbox" id="segLocation"> Post location</label>
+                <label><input type="checkbox" id="segLocation"> Post location site</label>
+                <label><input type="checkbox" id="segLocationState"> Post location state</label>
                 <label><input type="checkbox" id="segDatePosted"> Date of post</label>
                 <label><input type="checkbox" id="segCarMake"> Car make</label>
                 <label><input type="checkbox" id="segCarModel"> Car model</label>
