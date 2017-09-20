@@ -4,7 +4,7 @@ require_once dirname(__DIR__) . '/metadata/CraigslistSites.php';
 
 $pagesDir = dirname(__DIR__) . '/pages';
 
-exec('ps aux | grep scrape.php | grep -v grep', $output);
+exec('ps aux | grep scrape.php | grep -v grep | grep -v craigslist-cars', $output);
 if (count($output) > 1)
     die();
 
