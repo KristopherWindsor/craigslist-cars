@@ -4,13 +4,17 @@ require_once dirname(__DIR__) . '/metadata/CraigslistSites.php';
 
 $pagesDir = dirname(__DIR__) . '/pages';
 
+exec('ps aux | grep scrape.php | grep -v grep', $output);
+if (count($output) > 1)
+    die();
+
 $scrapeTerms = [
     //'bmw',
     //'chevrolet',
     //'chevy',
     'ford',
     'honda',
-    //'hyundai',
+    'hyundai',
     //'mazda',
     //'mini',
     'toyota',
