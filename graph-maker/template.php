@@ -91,8 +91,11 @@
             tmp = document.getElementById("filModelSize").value;
             if (tmp && item.modelSize != tmp)
                 continue;
-            tmp = document.getElementById("filModelYear").value;
-            if (tmp && "" + item.modelYear != tmp)
+            tmp = parseFloat(document.getElementById("filModelYearMin").value);
+            if (tmp && item.modelYear < tmp)
+                continue;
+            tmp = parseFloat(document.getElementById("filModelYearMax").value);
+            if (tmp && item.modelYear > tmp)
                 continue;
             tmp = document.getElementById("filVehicleTitle").value;
             if (tmp && tmp != item.vehicleTitle)
@@ -398,7 +401,8 @@
                         <input type="text" id="filPostTitle" placeholder="Filter by post title...">
                     </td>
                     <td>
-                        <input type="text" id="filModelYear" placeholder="Filter by year...">
+                        <input type="text" id="filModelYearMin" placeholder="Filter by year (min)...">
+                        <input type="text" id="filModelYearMax" placeholder="Filter by year (max)...">
                         <br><br>
                         <select id="filVehicleTitle">
                             <option value="">Filter by car title...</option>
