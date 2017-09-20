@@ -1,12 +1,14 @@
-"Location","Date Posted","Post Title","Car Make","Car Model","Model Size","Model Year","Vehicle Title","Transmission","Mileage","Price","Link","File Link","First Image","Greylist"
+"Location","Location State","Date Posted","Post Title","Car Make","Car Model","Model Size","Model Year","Vehicle Title","Transmission","Mileage","Price","Link","File Link","First Image","Greylist"
 <?php
 
 require_once __DIR__ . '/HtmlParser.php';
 require_once __DIR__ . '/../metadata/CarModels.php';
+require_once __DIR__ . '/../metadata/CraigslistSites.php';
 
 $pagesPath = dirname(__DIR__) . '/pages';
 
 $carModels = new CarModels();
+$craigslistSites = new CraigslistSites();
 
 // greylist.txt has Craigslist IDs or substrings of the filenames to greylist
 $greylist = @array_filter(explode("\n", file_get_contents(__DIR__ . '/greylist.txt') ?: ''));
@@ -18,24 +20,31 @@ function isGreyListed($filename, $greylist) {
 }
 
 $dir = new DirectoryIterator($pagesPath);
+$count = 0;
 foreach ($dir as $fileinfo) {
     if (!$fileinfo->isDot() && $fileinfo->getFilename() != '.DS_Store') {
+        $count++;
         go(
             $pagesPath . '/' . $fileinfo->getFilename(),
             isGreyListed($fileinfo->getFilename(), $greylist),
-            $carModels
+            $carModels,
+            $craigslistSites
         );
     }
 }
 
-function go($fileName, $isGreyListed, $carModels) {
+function go($fileName, $isGreyListed, CarModels $carModels, CraigslistSites $craigslistSites) {
   $fields = [];
 
   $htmlParser = new HtmlParser($fileName, $carModels);
   $z = $htmlParser->getHtml();
 
   // Location
-  $fields[] = between($z, '<a href="/">', '</a>');
+  $location = between($z, '<link rel="canonical" href="https://', '.craigslist');
+  $fields[] = $location;
+
+  // Location State
+  $fields[] = $craigslistSites->getStateForUrl($craigslistSites->convertShortLocationToUrl($location));
 
   // Date Posted
   $fields[] = between($z, '<time class="date timeago" datetime="', '">');
