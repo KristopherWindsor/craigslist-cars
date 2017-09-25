@@ -96,6 +96,7 @@
     ],
     "Chevrolet": [
         "Aveo",
+        "Blazer",
         "Bolt",
         "C/K",
         "Camaro",
@@ -110,6 +111,7 @@
         "Equinox",
         "Express",
         "Impala",
+        "LUV",
         "Malibu",
         "Silverado",
         "Sonic",
@@ -236,6 +238,34 @@
         "QX70",
         "QX80"
     ],
+    "Isuzu": [
+        "117",
+        "Amigo",
+        "Ascender",
+        "Aska",
+        "Axiom",
+        "Bellel",
+        "Bellett",
+        "D-Max",
+        "Florian",
+        "Gemini",
+        "Hombre",
+        "I-Mark",
+        "Impulse",
+        "Minx",
+        "Mu",
+        "MU-7",
+        "Oasis",
+        "P'up",
+        "Piazza",
+        "Rodeo",
+        "Storm",
+        "Stylus",
+        "TF",
+        "Trooper",
+        "VehiCROSS",
+        "Vertex"
+    ],
     "Jaguar": [
         "E-Pace",
         "F-Pace",
@@ -288,6 +318,7 @@
         "RX"
     ],
     "Lincoln": [
+        "Aviator",
         "Continental",
         "MKC",
         "MKS",
