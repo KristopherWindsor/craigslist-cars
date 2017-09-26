@@ -37,12 +37,13 @@ class HtmlParser
     {
         $postTitle = $this->getPostTitle();
         $makeModelField = $this->getRawMakeModel();
-        $postBody = strip_tags($this->getPostBody());
+        $postBody = str_replace('QR Code Link to This Post', '', strip_tags($this->getPostBody()));
+        $allHtml = $postTitle . ' ' . $makeModelField . $postBody;
 
         $bestScore = 0;
         $bestMake = $bestModel = '';
         foreach ($this->carModels->getAll() as list($make, $model)) {
-            $score = $this->scoreMakeModel($make, $model, $postTitle, $makeModelField, $postBody);
+            $score = $this->scoreMakeModel($make, $model, $postTitle, $makeModelField, $postBody, $allHtml);
             if ($score > $bestScore) {
                 $bestScore = $score;
                 $bestMake = $make;
@@ -58,8 +59,10 @@ class HtmlParser
         return $this->between('<span><b>', '</b>');
     }
 
-    private function scoreMakeModel($make, $model, $postTitle, $makeModelField, $postBody)
+    private function scoreMakeModel($make, $model, $postTitle, $makeModelField, $postBody, $allHtml)
     {
+        $isModelGeneric = strlen(preg_replace('/[0-9]+/', '', $model)) <= 3;
+
         $makes = array_key_exists($make, self::ALT_CAR_MAKES) ? self::ALT_CAR_MAKES[$make] : [];
         $makes[] = $make;
 
@@ -73,7 +76,7 @@ class HtmlParser
             $models[] = str_replace(' ', '', $model);
         }
 
-        $scoreTitle = $scoreField = $scoreBody = 0;
+        $scoreTitle = $scoreField = $scoreBody = $scoreHtml = 0;
 
         foreach ($makes as $make)
             foreach ($models as $model) {
@@ -81,7 +84,7 @@ class HtmlParser
                 $tmp = stripos($postTitle, "$make $model");
                 if ($tmp !== false) {
                     $scoreTitle = max($scoreTitle, 1 - .002 * $tmp + .02 * strlen($make . $model));
-                } else {
+                } elseif (!$isModelGeneric) {
                     $tmp = stripos($postTitle, $make);
                     $tmp2 = stripos($postTitle, $model);
                     if ($tmp !== false && $tmp2 !== false) {
@@ -89,7 +92,7 @@ class HtmlParser
                             $scoreTitle,
                             .5 - .001 * ($tmp + $tmp2) + .02 * min(strlen($make), strlen($model))
                         );
-                    } elseif ($tmp2 !== false && strlen($model) > 3 && !ctype_digit($model)) {
+                    } elseif ($tmp2 !== false) {
                         $scoreTitle = .2;
                     }
                 }
@@ -98,7 +101,7 @@ class HtmlParser
                 $tmp = stripos($makeModelField, "$make $model");
                 if ($tmp !== false) {
                     $scoreField = max($scoreField, 1 - .002 * $tmp + .02 * strlen($make . $model));
-                } else {
+                } elseif (!$isModelGeneric) {
                     $tmp = stripos($makeModelField, $make);
                     $tmp2 = stripos($makeModelField, $model);
                     if ($tmp !== false && $tmp2 !== false) {
@@ -106,7 +109,7 @@ class HtmlParser
                             $scoreField,
                             .5 - .001 * ($tmp + $tmp2) + .02 * min(strlen($make), strlen($model))
                         );
-                    } elseif ($tmp2 !== false && strlen($model) > 3 && !ctype_digit($model)) {
+                    } elseif ($tmp2 !== false) {
                         $scoreField = .2;
                     }
                 }
@@ -115,7 +118,7 @@ class HtmlParser
                 $tmp = stripos($postBody, "$make $model");
                 if ($tmp !== false) {
                     $scoreBody = max($scoreBody, 1 - .0002 * $tmp + .02 * strlen($make . $model));
-                } else {
+                } elseif (!$isModelGeneric) {
                     $tmp = stripos($postBody, $make);
                     $tmp2 = stripos($postBody, $model);
                     if ($tmp !== false && $tmp2 !== false) {
@@ -123,13 +126,24 @@ class HtmlParser
                             $scoreBody,
                             .5 - .0001 * ($tmp + $tmp2) + .02 * min(strlen($make), strlen($model))
                         );
-                    } elseif ($tmp2 !== false && strlen($model) > 3 && !ctype_digit($model)) {
-                        $scoreBody = .2;
+                    }
+                }
+
+                // Score whole HTML
+                if (!$isModelGeneric) {
+                    $tmp = stripos($allHtml, $make);
+                    $tmp2 = stripos($allHtml, $model);
+                    if ($tmp !== false && $tmp2 !== false) {
+                        $scoreHtml = max(
+                            $scoreHtml,
+                            .5 - .0001 * ($tmp + $tmp2) + .02 * min(strlen($make), strlen($model))
+                        );
                     }
                 }
             }
 
-        return 250 * $scoreField + 200 * $scoreTitle + 50 * $scoreBody;
+        return ($isModelGeneric ? .7 : 1) *
+            (500 * $scoreField + 400 * $scoreTitle + 150 * $scoreBody + 100 * $scoreHtml);
     }
 
     public function getCraigslistLocation()
