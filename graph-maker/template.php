@@ -1,7 +1,7 @@
 <!DOCTYPE HTML><?php require_once __DIR__ . '/../metadata/CarModels.php'; require_once __DIR__ . '/../metadata/CraigslistSites.php'; ?>
 <html>
 <head>
-    <title>Craigslist cars for sale</title>
+    <title>Graphs - recent used car listings on Craigslist (sfbay)</title>
     <style>
         body, html {margin: 0; padding: 0; max-width: 100vw; overflow-x: hidden;}
 
@@ -232,8 +232,10 @@
         var chart = new CanvasJS.Chart("chartContainer",
         {
             title:{
-                text: "Select cars recently for sale on Craigslist (scroll down for settings)",
-                fontSize: 20
+                text: dimensionFnNames[document.getElementById("xDim").value] + " vs. " +
+                      dimensionFnNames[document.getElementById("yDim").value] +
+                      " - recent used car listings on Craigslist (sfbay)",
+                fontSize: 18
             },
             animationEnabled: false,
             axisX: {
