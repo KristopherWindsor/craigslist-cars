@@ -16,3 +16,5 @@ foreach ($sites->getAllSiteUrls() as $site) {
         'php "' . __DIR__ . '/scrape-urls.php" "' . $pagesDir . '"';
     exec($command);
 }
+
+sleep(120);

@@ -7,7 +7,8 @@ class CraigslistSites
 
     public function __construct()
     {
-        $x = json_decode(file_get_contents(__DIR__ . '/craigslistSites.json'), true);
+        //$x = json_decode(file_get_contents(__DIR__ . '/craigslistSites.json'), true);
+        $x = ['California' => ["https://sfbay.craigslist.org/"]];
         $this->data = array_map(
             function ($i) {return array_combine($i, $i);},
             $x
