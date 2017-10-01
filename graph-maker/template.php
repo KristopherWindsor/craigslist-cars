@@ -5,6 +5,11 @@
     <style>
         body, html {margin: 0; padding: 0; max-width: 100vw; overflow-x: hidden;}
 
+        #hint {
+            position: absolute; bottom: 0; right: 5em; max-width: 200px; padding: 1em;
+            background-color: #8c8;
+        }
+
         .controls {background-color: #d7dbf7; padding: 1em;}
         .controls p {font-weight: bold;}
         .controls select {width: 20em;}
@@ -430,12 +435,23 @@
         // Triggers a graph update
         searchLocation(true);
         searchMakeAndModel();
+
+        window.setTimeout(
+            function (e) {
+                document.getElementById("hint").remove();
+            },
+            5000
+        );
     }
 </script>
 <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
 <body>
     <div id="chartContainer" style="height: 100vh">
+    </div>
+
+    <div id="hint">
+        Scroll down to change the graph settings ↓↓
     </div>
 
     <form>
