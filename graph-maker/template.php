@@ -127,13 +127,13 @@
 
             // Compute key (group name) for segmenting
             var key = '';
-            if (document.getElementById("segLocation").checked) {
+            /*if (document.getElementById("segLocation").checked) {
                 key = item.location;
             }
             if (document.getElementById("segLocationState").checked) {
                 key += (key == "" ? "" : "+");
                 key += item.locationState;
-            }
+            }*/
             if (document.getElementById("segDatePosted").checked) {
                 key += (key == "" ? "" : "+");
                 tmp = (Date.now() - (new Date(item.datePosted))) / 1000 / 3600;
@@ -447,8 +447,8 @@
                         <br><br>
                         <select id="filPostDate">
                             <option value="">Filter by date of post...</option>
-                            <option value="4">Last 4 hours</option>
-                            <option value="8">Last 8 hours</option>
+                            <!-- <option value="4">Last 4 hours</option>
+                            <option value="8">Last 8 hours</option> -->
                             <option value="24">Last 24 hours</option>
                             <option value="72">Last 3 days</option>
                             <option value="168">Last 7 days</option>
@@ -456,7 +456,7 @@
                         </select>
                         <br><br>
 
-                        <div>Filter by location (state or site)...</div>
+                        <!-- <div>Filter by location (state or site)...</div> -->
                         <br>
                         <datalist id="locations">
                             <option value="Show all">
@@ -471,7 +471,7 @@
                                 }
                             ?>
                         </datalist>
-                        <ul id="filLocation" class="tagList">
+                        <ul id="filLocation" class="tagList" style="display: none">
                             <li>
                                 <input type="text" id="selectLocation" list="locations"
                                     onInput="searchLocation()"
@@ -537,8 +537,8 @@
 
             <p>Data segmenting</p>
             <div class="segmenting">
-                <label><input type="checkbox" id="segLocation"> Post location site</label>
-                <label><input type="checkbox" id="segLocationState"> Post location state</label>
+                <!-- <label><input type="checkbox" id="segLocation"> Post location site</label>
+                <label><input type="checkbox" id="segLocationState"> Post location state</label> -->
                 <label><input type="checkbox" id="segDatePosted"> Date of post</label>
                 <label><input type="checkbox" id="segCarMake"> Car make</label>
                 <label><input type="checkbox" id="segCarModel"> Car model</label>
