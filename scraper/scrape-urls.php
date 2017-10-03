@@ -1,7 +1,9 @@
 <?php
 
+require_once __DIR__ . '/SourceStats.php';
+
 $path = $argv[1];
-$urls = json_decode(file_get_contents('php://stdin'));
+list($sourceUrl, $urls) = json_decode(file_get_contents('php://stdin'));
 
 $totalAdded = 0;
 foreach ($urls as $url) {
@@ -18,6 +20,9 @@ foreach ($urls as $url) {
   sleep(1);
 }
 
-// no rush to hit CL again...
-if (!$totalAdded)
-	sleep(300);
+if ($totalAdded) {
+	$stat = SourceStats::loadForSource($sourceUrl);
+	$hour = date('G');
+	$stat->resultsFound($hour, $totalAdded);
+	$stat->save();
+}
