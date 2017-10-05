@@ -451,7 +451,7 @@
     </div>
 
     <div id="hint">
-        Scroll down to change the graph settings ↓↓
+        Scroll down to change the graph settings
     </div>
 
     <form>

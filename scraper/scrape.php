@@ -24,11 +24,12 @@ foreach ($sites->getAllSiteUrls() as $site) {
     }
 }
 
-echo $bestStat->url . ' scored ' . $bestStat->getScore($hour) . "\n";
+$debugScore = $bestStat->getScore($hour, $debugInfo);
+echo $bestStat->url . "\tscored\t" . $debugScore . "\t" . json_encode($debugInfo) . "\n";
 
 if ($bestStat->getScore($hour) > 1) {
     $command = 'php "' . __DIR__ . '/scrape-rss.php" "' . $bestStat->url . '" | ' .
         'php "' . __DIR__ . '/scrape-urls.php" "' . $pagesDir . '"';
-    echo $command . "\n";
+    // echo $command . "\n";
     exec($command);
 }

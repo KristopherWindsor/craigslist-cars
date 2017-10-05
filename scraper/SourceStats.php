@@ -53,26 +53,43 @@ class SourceStats
 		file_put_contents(self::getFileName($this->url), $data);
 	}
 
-	public function getScore($hour)
+	public function getScore($hour, &$info = [])
 	{
 		// If we don't have data for this hour but we do have data for a previous hour, so use the previous hour's data
 		while ($hour && empty($this->totalTimeGapPerHour[$hour]))
 			$hour--;
 
-		$expectedResultsPerHour = 0;
-		if (!empty($this->totalResultsFoundPerHour[$hour]) && !empty($this->totalTimeGapPerHour[$hour])) {
+		$infoBonusGiven = false;
+		if (!empty($this->totalTimeGapPerHour[$hour])) {
 			$expectedResultsPerHour = $this->totalResultsFoundPerHour[$hour] / ($this->totalTimeGapPerHour[$hour] / 3600);
 			// We have limited data / low confidence in the expected result.
 			// Let's give a high score so that this source is prioritized until an accurate score can be calculated
-			if ($this->totalTimeGapPerHour[$hour] < 7200)
-				$expectedResultsPerHour += 1;
-		} elseif (empty($this->totalTimeGapPerHour[$hour]))
+			if ($this->totalTimeGapPerHour[$hour] < 7200) {
+				$expectedResultsPerHour += 3 / ($this->totalTimeGapPerHour[$hour] / 3600);
+				$infoBonusGiven = true;
+			}
+		} else
 			// We've never attempted the source at this hour, so let's guess we can get X new results
 			// Give a high score so that this source is prioritized until an accurate score can be calculated
 			$expectedResultsPerHour = 100;
 
 		$hoursSinceLastHit = (time() - $this->lastHitTime) / 3600;
 
-		return ($expectedResultsPerHour + 1) * $hoursSinceLastHit + $bonus;
+		$info = [
+			'hour'    => $hour,
+			'resPerH' => $expectedResultsPerHour,
+			'netres'  => @$this->totalResultsFoundPerHour[$hour],
+			'netgap'  => @$this->totalTimeGapPerHour[$hour] / 3600,
+			'bonus'   => $infoBonusGiven,
+			'gap'     => $hoursSinceLastHit,
+			'aggRes'  => array_sum($this->totalResultsFoundPerHour),
+			'aggGap'  => array_sum($this->totalTimeGapPerHour) / 3600,
+		];
+
+		// The RSS feeds only update once per 15 minutes
+		if ($hoursSinceLastHit < .25)
+			return 0;
+
+		return ($expectedResultsPerHour + 1) * $hoursSinceLastHit;
 	}
 }
