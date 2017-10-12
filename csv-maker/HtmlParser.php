@@ -5,8 +5,9 @@ require_once __DIR__ . '/../metadata/CarModels.php';
 class HtmlParser
 {
     const ALT_CAR_MAKES = [
-        'Chevrolet' => ['Chevy', 'Chev'],
-        'Volkswagen' => ['VW'],
+        'Chevrolet'     => ['Chevy', 'Chev'],
+        'Mercedes-Benz' => ['Mercedes'],
+        'Volkswagen'    => ['VW'],
     ];
 
     private $html;
