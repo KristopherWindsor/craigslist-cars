@@ -561,7 +561,7 @@
                 <label><input type="checkbox" id="segCarMake"> Car make</label>
                 <label><input type="checkbox" id="segCarModel"> Car model</label>
                 <label><input type="checkbox" id="segModelYear"> Model year</label>
-                <label><input type="checkbox" id="segVehicleTitle"> Vehicle title</label>
+                <label><input type="checkbox" id="segVehicleTitle" checked> Vehicle title</label>
                 <label><input type="checkbox" id="segTransmission"> Transmission type</label>
                 <label><input type="checkbox" id="segMileage"> Mileage</label>
                 <label><input type="checkbox" id="segPrice"> Price</label>
