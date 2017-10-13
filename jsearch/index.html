@@ -9,48 +9,54 @@
     <script>
         var resultSources = [
 
-["N. California", "https://redding.craigslist.org/search/cta?nearbyArea=1&nearbyArea=12&nearbyArea=187&nearbyArea=189&nearbyArea=216&nearbyArea=233&nearbyArea=373&nearbyArea=454&nearbyArea=456&nearbyArea=459&nearbyArea=675&nearbyArea=707&nearbyArea=708&nearbyArea=92&nearbyArea=94&nearbyArea=96&nearbyArea=97&searchNearby=2&sort=priceasc&format=rss&query="],
-["S. California", "https://bakersfield.craigslist.org/search/cta?nearbyArea=102&nearbyArea=103&nearbyArea=104&nearbyArea=191&nearbyArea=208&nearbyArea=209&nearbyArea=26&nearbyArea=285&nearbyArea=346&nearbyArea=43&nearbyArea=62&nearbyArea=7&nearbyArea=709&nearbyArea=710&nearbyArea=8&searchNearby=2&sort=priceasc&format=rss&query="],
-["Utah", "https://saltlakecity.craigslist.org/search/cta?nearbyArea=292&nearbyArea=351&nearbyArea=448&nearbyArea=469&nearbyArea=652&searchNearby=2&sort=priceasc&format=rss&query="],
-["St. George", "https://stgeorge.craigslist.org/search/cta?nearbyArea=565&searchNearby=2&sort=priceasc&format=rss&query="],
-["Washington", "https://yakima.craigslist.org/search/cta?nearbyArea=2&nearbyArea=217&nearbyArea=232&nearbyArea=321&nearbyArea=322&nearbyArea=324&nearbyArea=325&nearbyArea=350&nearbyArea=368&nearbyArea=461&nearbyArea=466&nearbyArea=655&nearbyArea=9&nearbyArea=95&searchNearby=2&sort=priceasc&format=rss&query="],
-["Arizona", "https://phoenix.craigslist.org/search/cta?nearbyArea=244&nearbyArea=370&nearbyArea=419&nearbyArea=455&nearbyArea=468&nearbyArea=57&nearbyArea=651&searchNearby=2&sort=priceasc&format=rss&query="],
-["Montana", "https://butte.craigslist.org/search/cta?nearbyArea=424&nearbyArea=52&nearbyArea=654&nearbyArea=656&nearbyArea=657&nearbyArea=658&nearbyArea=659&nearbyArea=660&nearbyArea=662&searchNearby=2&sort=priceasc&format=rss&query="],
-["Colorado", "https://cosprings.craigslist.org/search/cta?nearbyArea=13&nearbyArea=197&nearbyArea=218&nearbyArea=287&nearbyArea=288&nearbyArea=315&nearbyArea=319&nearbyArea=320&nearbyArea=568&nearbyArea=669&nearbyArea=687&nearbyArea=713&searchNearby=2&sort=priceasc&format=rss&query="],
-["S. New Mexico", "https://roswell.craigslist.org/search/cta?nearbyArea=132&nearbyArea=267&nearbyArea=268&nearbyArea=269&nearbyArea=334&nearbyArea=50&nearbyArea=653&searchNearby=2&sort=priceasc&format=rss&query="],
-["E. Montana", "https://bismarck.craigslist.org/search/cta?nearbyArea=192&nearbyArea=195&nearbyArea=196&nearbyArea=435&nearbyArea=667&nearbyArea=680&nearbyArea=681&nearbyArea=682&searchNearby=2&sort=priceasc&format=rss&query="],
-["N. Kansas", "https://grandisland.craigslist.org/search/cta?nearbyArea=280&nearbyArea=282&nearbyArea=341&nearbyArea=347&nearbyArea=428&nearbyArea=55&nearbyArea=668&nearbyArea=679&nearbyArea=688&nearbyArea=690&nearbyArea=99&searchNearby=2&sort=priceasc&format=rss&query="],
-["Texas", "https://sanangelo.craigslist.org/search/cta?nearbyArea=15&nearbyArea=270&nearbyArea=327&nearbyArea=364&nearbyArea=449&nearbyArea=53&nearbyArea=647&nearbyArea=648&searchNearby=2&sort=priceasc&format=rss&query="],
-["N. Texas", "https://lawton.craigslist.org/search/cta?nearbyArea=21&nearbyArea=308&nearbyArea=365&nearbyArea=433&nearbyArea=54&nearbyArea=649&nearbyArea=650&nearbyArea=70&searchNearby=2&sort=priceasc&format=rss&query="],
-["Minnesota", "https://eauclaire.craigslist.org/search/cta?nearbyArea=165&nearbyArea=19&nearbyArea=241&nearbyArea=243&nearbyArea=255&nearbyArea=262&nearbyArea=316&nearbyArea=362&nearbyArea=363&nearbyArea=369&nearbyArea=421&nearbyArea=458&nearbyArea=47&nearbyArea=552&nearbyArea=553&nearbyArea=571&nearbyArea=631&nearbyArea=663&nearbyArea=664&nearbyArea=665&nearbyArea=692&nearbyArea=693&searchNearby=2&sort=priceasc&format=rss&query="],
-["Missouri", "https://columbiamo.craigslist.org/search/cta?nearbyArea=190&nearbyArea=221&nearbyArea=224&nearbyArea=225&nearbyArea=29&nearbyArea=293&nearbyArea=30&nearbyArea=307&nearbyArea=339&nearbyArea=340&nearbyArea=344&nearbyArea=345&nearbyArea=423&nearbyArea=425&nearbyArea=445&nearbyArea=566&nearbyArea=567&nearbyArea=569&nearbyArea=689&nearbyArea=691&nearbyArea=694&nearbyArea=695&nearbyArea=696&nearbyArea=697&nearbyArea=698&nearbyArea=699&nearbyArea=98&searchNearby=2&sort=priceasc&format=rss&query="],
-["S. Texas", "https://victoriatx.craigslist.org/search/cta?nearbyArea=23&nearbyArea=263&nearbyArea=264&nearbyArea=265&nearbyArea=266&nearbyArea=271&nearbyArea=326&nearbyArea=470&nearbyArea=645&searchNearby=2&sort=priceasc&format=rss&query="],
-["Louisiana", "https://monroe.craigslist.org/search/cta?nearbyArea=100&nearbyArea=134&nearbyArea=199&nearbyArea=206&nearbyArea=230&nearbyArea=283&nearbyArea=284&nearbyArea=31&nearbyArea=358&nearbyArea=359&nearbyArea=374&nearbyArea=375&nearbyArea=46&nearbyArea=641&nearbyArea=642&nearbyArea=643&nearbyArea=644&searchNearby=2&sort=priceasc&format=rss&query="],
-["N. Illinois", "https://muskegon.craigslist.org/search/cta?nearbyArea=11&nearbyArea=129&nearbyArea=172&nearbyArea=212&nearbyArea=22&nearbyArea=223&nearbyArea=226&nearbyArea=228&nearbyArea=259&nearbyArea=260&nearbyArea=261&nearbyArea=309&nearbyArea=426&nearbyArea=434&nearbyArea=555&nearbyArea=563&nearbyArea=572&nearbyArea=627&nearbyArea=628&nearbyArea=630&searchNearby=2&sort=priceasc&format=rss&query="],
-["Tennessee", "https://owensboro.craigslist.org/search/cta?nearbyArea=133&nearbyArea=202&nearbyArea=220&nearbyArea=227&nearbyArea=229&nearbyArea=32&nearbyArea=342&nearbyArea=348&nearbyArea=360&nearbyArea=361&nearbyArea=377&nearbyArea=45&nearbyArea=465&nearbyArea=558&nearbyArea=58&nearbyArea=670&nearbyArea=671&nearbyArea=672&nearbyArea=674&searchNearby=2&sort=priceasc&format=rss&query="],
-["Georgia", "https://columbusga.craigslist.org/search/cta?nearbyArea=127&nearbyArea=14&nearbyArea=186&nearbyArea=200&nearbyArea=203&nearbyArea=207&nearbyArea=231&nearbyArea=256&nearbyArea=257&nearbyArea=258&nearbyArea=371&nearbyArea=372&nearbyArea=467&nearbyArea=559&nearbyArea=560&nearbyArea=562&nearbyArea=635&nearbyArea=636&nearbyArea=637&nearbyArea=640&searchNearby=2&sort=priceasc&format=rss&query="],
-["Ohio", "https://zanesville.craigslist.org/search/cta?nearbyArea=131&nearbyArea=194&nearbyArea=204&nearbyArea=251&nearbyArea=252&nearbyArea=27&nearbyArea=33&nearbyArea=35&nearbyArea=42&nearbyArea=436&nearbyArea=437&nearbyArea=438&nearbyArea=439&nearbyArea=440&nearbyArea=441&nearbyArea=442&nearbyArea=443&nearbyArea=573&nearbyArea=632&nearbyArea=700&nearbyArea=701&nearbyArea=703&nearbyArea=706&searchNearby=2&sort=priceasc&format=rss&query="],
-["North Carolina", "https://fayetteville.craigslist.org/search/cta?nearbyArea=101&nearbyArea=128&nearbyArea=171&nearbyArea=253&nearbyArea=254&nearbyArea=272&nearbyArea=274&nearbyArea=289&nearbyArea=290&nearbyArea=291&nearbyArea=323&nearbyArea=335&nearbyArea=336&nearbyArea=353&nearbyArea=36&nearbyArea=366&nearbyArea=367&nearbyArea=41&nearbyArea=446&nearbyArea=447&nearbyArea=457&nearbyArea=462&nearbyArea=464&nearbyArea=48&nearbyArea=60&nearbyArea=61&nearbyArea=634&nearbyArea=712&searchNearby=2&sort=priceasc&format=rss&query="],
-["Arkansas", "https://fairbanks.craigslist.org/search/cta?sort=priceasc&format=rss&query="],
-["W. New York", "https://rochester.craigslist.org/search/cta?nearbyArea=130&nearbyArea=201&nearbyArea=247&nearbyArea=248&nearbyArea=275&nearbyArea=337&nearbyArea=40&nearbyArea=452&nearbyArea=453&nearbyArea=683&nearbyArea=684&nearbyArea=685&nearbyArea=704&searchNearby=2&sort=priceasc&format=rss&query="],
-["Florida", "https://orlando.craigslist.org/search/cta?nearbyArea=125&nearbyArea=20&nearbyArea=205&nearbyArea=219&nearbyArea=237&nearbyArea=238&nearbyArea=330&nearbyArea=331&nearbyArea=332&nearbyArea=333&nearbyArea=37&nearbyArea=376&nearbyArea=427&nearbyArea=557&nearbyArea=570&nearbyArea=638&nearbyArea=639&nearbyArea=80&searchNearby=2&sort=priceasc&format=rss&query="],
-["Mid-Atlantic", "https://baltimore.craigslist.org/search/cta?nearbyArea=10&nearbyArea=166&nearbyArea=167&nearbyArea=17&nearbyArea=170&nearbyArea=193&nearbyArea=276&nearbyArea=277&nearbyArea=278&nearbyArea=279&nearbyArea=286&nearbyArea=328&nearbyArea=329&nearbyArea=349&nearbyArea=355&nearbyArea=356&nearbyArea=357&nearbyArea=444&nearbyArea=460&nearbyArea=463&nearbyArea=556&nearbyArea=561&nearbyArea=633&nearbyArea=705&nearbyArea=711&searchNearby=2&sort=priceasc&format=rss&query="],
-["E. New York", "https://worcester.craigslist.org/search/cta?nearbyArea=168&nearbyArea=169&nearbyArea=173&nearbyArea=198&nearbyArea=239&nearbyArea=249&nearbyArea=250&nearbyArea=281&nearbyArea=3&nearbyArea=338&nearbyArea=354&nearbyArea=378&nearbyArea=38&nearbyArea=4&nearbyArea=44&nearbyArea=451&nearbyArea=59&nearbyArea=686&nearbyArea=93&searchNearby=2&sort=priceasc&format=rss&query="]
+["N. California", "https://redding.craigslist.org/search/cta?nearbyArea=1&nearbyArea=12&nearbyArea=187&nearbyArea=189&nearbyArea=216&nearbyArea=233&nearbyArea=373&nearbyArea=454&nearbyArea=456&nearbyArea=459&nearbyArea=675&nearbyArea=707&nearbyArea=708&nearbyArea=92&nearbyArea=94&nearbyArea=96&nearbyArea=97&searchNearby=2&sort=priceasc&format=rss"],
+["S. California", "https://bakersfield.craigslist.org/search/cta?nearbyArea=102&nearbyArea=103&nearbyArea=104&nearbyArea=191&nearbyArea=208&nearbyArea=209&nearbyArea=26&nearbyArea=285&nearbyArea=346&nearbyArea=43&nearbyArea=62&nearbyArea=7&nearbyArea=709&nearbyArea=710&nearbyArea=8&searchNearby=2&sort=priceasc&format=rss"],
+["Utah", "https://saltlakecity.craigslist.org/search/cta?nearbyArea=292&nearbyArea=351&nearbyArea=448&nearbyArea=469&nearbyArea=652&searchNearby=2&sort=priceasc&format=rss"],
+["St. George", "https://stgeorge.craigslist.org/search/cta?nearbyArea=565&searchNearby=2&sort=priceasc&format=rss"],
+["Washington", "https://yakima.craigslist.org/search/cta?nearbyArea=2&nearbyArea=217&nearbyArea=232&nearbyArea=321&nearbyArea=322&nearbyArea=324&nearbyArea=325&nearbyArea=350&nearbyArea=368&nearbyArea=461&nearbyArea=466&nearbyArea=655&nearbyArea=9&nearbyArea=95&searchNearby=2&sort=priceasc&format=rss"],
+["Arizona", "https://phoenix.craigslist.org/search/cta?nearbyArea=244&nearbyArea=370&nearbyArea=419&nearbyArea=455&nearbyArea=468&nearbyArea=57&nearbyArea=651&searchNearby=2&sort=priceasc&format=rss"],
+["Montana", "https://butte.craigslist.org/search/cta?nearbyArea=424&nearbyArea=52&nearbyArea=654&nearbyArea=656&nearbyArea=657&nearbyArea=658&nearbyArea=659&nearbyArea=660&nearbyArea=662&searchNearby=2&sort=priceasc&format=rss"],
+["Colorado", "https://cosprings.craigslist.org/search/cta?nearbyArea=13&nearbyArea=197&nearbyArea=218&nearbyArea=287&nearbyArea=288&nearbyArea=315&nearbyArea=319&nearbyArea=320&nearbyArea=568&nearbyArea=669&nearbyArea=687&nearbyArea=713&searchNearby=2&sort=priceasc&format=rss"],
+["S. New Mexico", "https://roswell.craigslist.org/search/cta?nearbyArea=132&nearbyArea=267&nearbyArea=268&nearbyArea=269&nearbyArea=334&nearbyArea=50&nearbyArea=653&searchNearby=2&sort=priceasc&format=rss"],
+["E. Montana", "https://bismarck.craigslist.org/search/cta?nearbyArea=192&nearbyArea=195&nearbyArea=196&nearbyArea=435&nearbyArea=667&nearbyArea=680&nearbyArea=681&nearbyArea=682&searchNearby=2&sort=priceasc&format=rss"],
+["N. Kansas", "https://grandisland.craigslist.org/search/cta?nearbyArea=280&nearbyArea=282&nearbyArea=341&nearbyArea=347&nearbyArea=428&nearbyArea=55&nearbyArea=668&nearbyArea=679&nearbyArea=688&nearbyArea=690&nearbyArea=99&searchNearby=2&sort=priceasc&format=rss"],
+["Texas", "https://sanangelo.craigslist.org/search/cta?nearbyArea=15&nearbyArea=270&nearbyArea=327&nearbyArea=364&nearbyArea=449&nearbyArea=53&nearbyArea=647&nearbyArea=648&searchNearby=2&sort=priceasc&format=rss"],
+["N. Texas", "https://lawton.craigslist.org/search/cta?nearbyArea=21&nearbyArea=308&nearbyArea=365&nearbyArea=433&nearbyArea=54&nearbyArea=649&nearbyArea=650&nearbyArea=70&searchNearby=2&sort=priceasc&format=rss"],
+["Minnesota", "https://eauclaire.craigslist.org/search/cta?nearbyArea=165&nearbyArea=19&nearbyArea=241&nearbyArea=243&nearbyArea=255&nearbyArea=262&nearbyArea=316&nearbyArea=362&nearbyArea=363&nearbyArea=369&nearbyArea=421&nearbyArea=458&nearbyArea=47&nearbyArea=552&nearbyArea=553&nearbyArea=571&nearbyArea=631&nearbyArea=663&nearbyArea=664&nearbyArea=665&nearbyArea=692&nearbyArea=693&searchNearby=2&sort=priceasc&format=rss"],
+["Missouri", "https://columbiamo.craigslist.org/search/cta?nearbyArea=190&nearbyArea=221&nearbyArea=224&nearbyArea=225&nearbyArea=29&nearbyArea=293&nearbyArea=30&nearbyArea=307&nearbyArea=339&nearbyArea=340&nearbyArea=344&nearbyArea=345&nearbyArea=423&nearbyArea=425&nearbyArea=445&nearbyArea=566&nearbyArea=567&nearbyArea=569&nearbyArea=689&nearbyArea=691&nearbyArea=694&nearbyArea=695&nearbyArea=696&nearbyArea=697&nearbyArea=698&nearbyArea=699&nearbyArea=98&searchNearby=2&sort=priceasc&format=rss"],
+["S. Texas", "https://victoriatx.craigslist.org/search/cta?nearbyArea=23&nearbyArea=263&nearbyArea=264&nearbyArea=265&nearbyArea=266&nearbyArea=271&nearbyArea=326&nearbyArea=470&nearbyArea=645&searchNearby=2&sort=priceasc&format=rss"],
+["Louisiana", "https://monroe.craigslist.org/search/cta?nearbyArea=100&nearbyArea=134&nearbyArea=199&nearbyArea=206&nearbyArea=230&nearbyArea=283&nearbyArea=284&nearbyArea=31&nearbyArea=358&nearbyArea=359&nearbyArea=374&nearbyArea=375&nearbyArea=46&nearbyArea=641&nearbyArea=642&nearbyArea=643&nearbyArea=644&searchNearby=2&sort=priceasc&format=rss"],
+["N. Illinois", "https://muskegon.craigslist.org/search/cta?nearbyArea=11&nearbyArea=129&nearbyArea=172&nearbyArea=212&nearbyArea=22&nearbyArea=223&nearbyArea=226&nearbyArea=228&nearbyArea=259&nearbyArea=260&nearbyArea=261&nearbyArea=309&nearbyArea=426&nearbyArea=434&nearbyArea=555&nearbyArea=563&nearbyArea=572&nearbyArea=627&nearbyArea=628&nearbyArea=630&searchNearby=2&sort=priceasc&format=rss"],
+["Tennessee", "https://owensboro.craigslist.org/search/cta?nearbyArea=133&nearbyArea=202&nearbyArea=220&nearbyArea=227&nearbyArea=229&nearbyArea=32&nearbyArea=342&nearbyArea=348&nearbyArea=360&nearbyArea=361&nearbyArea=377&nearbyArea=45&nearbyArea=465&nearbyArea=558&nearbyArea=58&nearbyArea=670&nearbyArea=671&nearbyArea=672&nearbyArea=674&searchNearby=2&sort=priceasc&format=rss"],
+["Georgia", "https://columbusga.craigslist.org/search/cta?nearbyArea=127&nearbyArea=14&nearbyArea=186&nearbyArea=200&nearbyArea=203&nearbyArea=207&nearbyArea=231&nearbyArea=256&nearbyArea=257&nearbyArea=258&nearbyArea=371&nearbyArea=372&nearbyArea=467&nearbyArea=559&nearbyArea=560&nearbyArea=562&nearbyArea=635&nearbyArea=636&nearbyArea=637&nearbyArea=640&searchNearby=2&sort=priceasc&format=rss"],
+["Ohio", "https://zanesville.craigslist.org/search/cta?nearbyArea=131&nearbyArea=194&nearbyArea=204&nearbyArea=251&nearbyArea=252&nearbyArea=27&nearbyArea=33&nearbyArea=35&nearbyArea=42&nearbyArea=436&nearbyArea=437&nearbyArea=438&nearbyArea=439&nearbyArea=440&nearbyArea=441&nearbyArea=442&nearbyArea=443&nearbyArea=573&nearbyArea=632&nearbyArea=700&nearbyArea=701&nearbyArea=703&nearbyArea=706&searchNearby=2&sort=priceasc&format=rss"],
+["North Carolina", "https://fayetteville.craigslist.org/search/cta?nearbyArea=101&nearbyArea=128&nearbyArea=171&nearbyArea=253&nearbyArea=254&nearbyArea=272&nearbyArea=274&nearbyArea=289&nearbyArea=290&nearbyArea=291&nearbyArea=323&nearbyArea=335&nearbyArea=336&nearbyArea=353&nearbyArea=36&nearbyArea=366&nearbyArea=367&nearbyArea=41&nearbyArea=446&nearbyArea=447&nearbyArea=457&nearbyArea=462&nearbyArea=464&nearbyArea=48&nearbyArea=60&nearbyArea=61&nearbyArea=634&nearbyArea=712&searchNearby=2&sort=priceasc&format=rss"],
+["Arkansas", "https://fairbanks.craigslist.org/search/cta?sort=priceasc&format=rss"],
+["W. New York", "https://rochester.craigslist.org/search/cta?nearbyArea=130&nearbyArea=201&nearbyArea=247&nearbyArea=248&nearbyArea=275&nearbyArea=337&nearbyArea=40&nearbyArea=452&nearbyArea=453&nearbyArea=683&nearbyArea=684&nearbyArea=685&nearbyArea=704&searchNearby=2&sort=priceasc&format=rss"],
+["Florida", "https://orlando.craigslist.org/search/cta?nearbyArea=125&nearbyArea=20&nearbyArea=205&nearbyArea=219&nearbyArea=237&nearbyArea=238&nearbyArea=330&nearbyArea=331&nearbyArea=332&nearbyArea=333&nearbyArea=37&nearbyArea=376&nearbyArea=427&nearbyArea=557&nearbyArea=570&nearbyArea=638&nearbyArea=639&nearbyArea=80&searchNearby=2&sort=priceasc&format=rss"],
+["Mid-Atlantic", "https://baltimore.craigslist.org/search/cta?nearbyArea=10&nearbyArea=166&nearbyArea=167&nearbyArea=17&nearbyArea=170&nearbyArea=193&nearbyArea=276&nearbyArea=277&nearbyArea=278&nearbyArea=279&nearbyArea=286&nearbyArea=328&nearbyArea=329&nearbyArea=349&nearbyArea=355&nearbyArea=356&nearbyArea=357&nearbyArea=444&nearbyArea=460&nearbyArea=463&nearbyArea=556&nearbyArea=561&nearbyArea=633&nearbyArea=705&nearbyArea=711&searchNearby=2&sort=priceasc&format=rss"],
+["E. New York", "https://worcester.craigslist.org/search/cta?nearbyArea=168&nearbyArea=169&nearbyArea=173&nearbyArea=198&nearbyArea=239&nearbyArea=249&nearbyArea=250&nearbyArea=281&nearbyArea=3&nearbyArea=338&nearbyArea=354&nearbyArea=378&nearbyArea=38&nearbyArea=4&nearbyArea=44&nearbyArea=451&nearbyArea=59&nearbyArea=686&nearbyArea=93&searchNearby=2&sort=priceasc&format=rss"]
 
         ];
 
+        var searchId = 1000;
+        var searchParams;
         var totalResultsFound = 0;
         var pendingSearchRequests = 0;
         var resultSourcesIndex = 0;
         var intervalResource;
+        var tooManyRequestsErrorShown = false;
 
         var uniqueDescriptions = {}; // If we find the same description in two results, only show it once
 
-        function search(location, url, proxies) {
+        function search(location, url, proxies, searchIdNow) {
             pendingSearchRequests++;
 
-            var proxyUrl = getProxyUrl(proxies[0], url);
+            var proxyUrl = getProxyUrl(proxies[0], url, searchParams);
             $.get(proxyUrl, function (data) {
+                if (searchId != searchIdNow)
+                    return;
+
                 var xml = $(data);
 
                 xml.find("item").each(function () {
@@ -89,14 +95,20 @@
                     div.appendTo("#results");
                     totalResultsFound++;
                 });
-            }).fail(function () {
+            }).fail(function (jqXHR, textStatus, errorThrown) {
                 console.log("Request failed. Remaining proxies: " + (proxies.length - 1));
                 if (proxies.length > 1) {
                     search(location, url, proxies.slice(1));
                 }
+
+                if (errorThrown == "Too Many Requests" && !tooManyRequestsErrorShown) {
+                    alert("You've made several searches and cannot do anymore now. Please try again in an hour.");
+                    tooManyRequestsErrorShown = true;
+                }
             }).always(function () {
                 pendingSearchRequests--;
-                console.log("Total results found: " + totalResultsFound);
+                if (totalResultsFound > 0)
+                    $("#howManyResults").text("Total results shown: " + totalResultsFound);
             });
         }
 
@@ -107,7 +119,8 @@
             if (totalResultsFound > 200 || resultSourcesIndex >= resultSources.length) {
                 console.log("searchManager interval cleared");
                 clearInterval(intervalResource);
-                $("#status").text("Done");
+                intervalResource = null;
+                $("#status").html("");
                 return;
             }
 
@@ -115,14 +128,15 @@
                 search(
                     resultSources[resultSourcesIndex][0],
                     resultSources[resultSourcesIndex][1],
-                    getRandomizedListOfProxies()
+                    getRandomizedListOfProxies(),
+                    searchId
                 );
                 resultSourcesIndex++;
             }
         }
 
-        function getProxyUrl(proxy, url) {
-            return proxy + "/redirecter.php?token=wedfghnb&url=" + encodeURIComponent(url + "&auto_make_model=charger&min_auto_year=1973&max_auto_year=1973");
+        function getProxyUrl(proxy, url, searchParams) {
+            return proxy + "/redirecter.php?token=wedfghnb&url=" + encodeURIComponent(url + searchParams);
         }
 
         function getRandomizedListOfProxies() {
@@ -135,24 +149,90 @@
             return proxies;
         }
 
+        function startSearch() {
+            searchId++;
+
+            // reset UI
+            $("#results").html('');
+            $("#howManyResults").html('');
+            $("#status").html('<img src="spinner.gif">');
+
+            // search results start over
+            totalResultsFound = 0;
+            resultSourcesIndex = 0;
+
+            // determine search query
+            searchParams = "";
+            $("form input").each(function () {
+                searchParams += "&" + $(this).attr("name") + "=" + encodeURIComponent( $(this).val() );
+            });
+
+            // do searching
+            searchManager();
+            if (!intervalResource)
+                intervalResource = setInterval(searchManager, 50);
+        }
+
+        function getUrlParam(name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results == null)
+                return "";
+            return results[1] || "";
+        }
+
         function init() {
             $.ajaxSetup({timeout: 2500});
 
-            searchManager();
-            intervalResource = setInterval(searchManager, 50);
+            var anyFields = false;
+            $("form input").each(function () {
+                var field = decodeURIComponent(
+                    getUrlParam(
+                        $(this).attr("name")
+                    ).replace(/\+/g, '%20')
+                );
+                $(this).val(field);
+                if (field != "")
+                    anyFields = true;
+            });
+
+            if (anyFields)
+                startSearch();
         }
 
         $(init);
     </script>
     <style>
-        .result {clear: left;}
+        .result, #howManyResults {clear: left;}
         .result .picA {float: left; display: inline-block; margin: 0 2em 3em 0; width: 300px;}
         .result h2 a {color: black; text-decoration: none;}
         .result img {}
+        label {display: inline-block;}
     </style>
 </head>
 <body>
+    <form action="index.html" method="GET">
+
+        <div>
+            <label><input type="text" name="query" placeholder="Search"></label>
+            <button id="searchButton" type="submit">Search</button>
+            <br>
+            <br>
+
+            <label><input type="text" name="auto_make_model" placeholder="Make / model"></label>
+
+            <label><input type="tel" name="min_price" placeholder="min price"></label>
+            <label><input type="tel" name="max_price" placeholder="max price"></label>
+
+            <label><input type="tel" name="min_auto_year" placeholder="min year"></label>
+            <label><input type="tel" name="max_auto_year" placeholder="max year"></label>
+
+            <label><input type="tel" name="min_auto_miles" placeholder="min miles"></label>
+            <label><input type="tel" name="max_auto_miles" placeholder="max miles"></label>
+        </div>
+    </form>
+
     <div id="results"></div>
-    <p id="status">Loading...</p>
+    <div id="howManyResults"></div>
+    <div id="status"><h2>Search for cars across the USA!</h2></div>
 </body>
 </html>
