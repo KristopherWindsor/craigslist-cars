@@ -41,7 +41,6 @@
 
         ];
 
-        var searchId = 1000;
         var searchParams;
         var totalResultsFound = 0;
         var pendingSearchRequests = 0;
@@ -51,15 +50,13 @@
 
         var uniqueDescriptions = {}; // If we find the same description in two results, only show it once
 
-        function search(location, url, proxies, searchIdNow) {
+        function search(location, url, proxies) {
             pendingSearchRequests++;
 
             var proxyUrl = getProxyUrl(proxies[0], url, searchParams);
             $.get(proxyUrl, function (data) {
-                if (searchId != searchIdNow)
-                    return;
-
                 var xml = $(data);
+                console.log("Got " + xml.find("item").length + " results");
 
                 xml.find("item").each(function () {
                     var description = $(this).find("description").text();
@@ -130,8 +127,7 @@
                 search(
                     resultSources[resultSourcesIndex][0],
                     resultSources[resultSourcesIndex][1],
-                    getRandomizedListOfProxies(),
-                    searchId
+                    getRandomizedListOfProxies()
                 );
                 resultSourcesIndex++;
             }
@@ -152,8 +148,6 @@
         }
 
         function startSearch() {
-            searchId++;
-
             // reset UI
             $("#results").html('');
             $("#howManyResults").html('');
