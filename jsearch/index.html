@@ -127,7 +127,7 @@
                 search(
                     resultSources[resultSourcesIndex][0],
                     resultSources[resultSourcesIndex][1],
-                    getRandomizedListOfProxies()
+                    getRoundRobinListOfProxies()
                 );
                 resultSourcesIndex++;
             }
@@ -137,14 +137,18 @@
             return proxy + "/redirecter.php?token=wedfghnb&url=" + encodeURIComponent(url + searchParams);
         }
 
-        function getRandomizedListOfProxies() {
+        var proxyStartIndex = 0;
+        function getRoundRobinListOfProxies() {
             var proxies = [
                 "http://76.72.152.25",
                 "http://10.0.1.101"
             ];
 
-            for (var j, x, i = proxies.length; i; j = parseInt(Math.random() * i), x = proxies[--i], proxies[i] = proxies[j], proxies[j] = x);
-            return proxies;
+            splicedProxies = proxies.slice(proxyStartIndex);
+            splicedProxies = splicedProxies.concat(proxies.slice(0, proxyStartIndex));
+            proxyStartIndex = (proxyStartIndex + 1) % proxies.length;
+
+            return splicedProxies;
         }
 
         function startSearch() {
@@ -152,10 +156,6 @@
             $("#results").html('');
             $("#howManyResults").html('');
             $("#status").html('<img src="' + spinnerGif + '">');
-
-            // search results start over
-            totalResultsFound = 0;
-            resultSourcesIndex = 0;
 
             // determine search query
             searchParams = "";
