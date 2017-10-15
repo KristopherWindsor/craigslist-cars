@@ -41,19 +41,37 @@
 
         ];
 
+        var PROXIES = [
+            "http://76.72.152.25",
+            "http://10.0.1.101"
+        ];
+        var badProxies = {};
+
         var searchParams;
         var totalResultsFound = 0;
         var pendingSearchRequests = 0;
         var resultSourcesIndex = 0;
         var intervalResource;
         var tooManyRequestsErrorShown = false;
+        var someQueriesFailed = false;
 
         var uniqueDescriptions = {}; // If we find the same description in two results, only show it once
 
         function search(location, url, proxies) {
-            pendingSearchRequests++;
+            // filter out bad proxies right before making a new request
+            proxies = proxies.filter(function (item) {
+                return badProxies[item] != true;
+            });
 
+            if (proxies.length == 0) {
+                console.log("No proxies available to do the search");
+                someQueriesFailed = true;
+                return;
+            }
+
+            pendingSearchRequests++;
             var proxyUrl = getProxyUrl(proxies[0], url, searchParams);
+
             $.get(proxyUrl, function (data) {
                 var xml = $(data);
                 console.log("Got " + xml.find("item").length + " results");
@@ -95,10 +113,14 @@
                     totalResultsFound++;
                 });
             }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.log("Request failed. Remaining proxies: " + (proxies.length - 1));
-                if (proxies.length > 1) {
-                    search(location, url, proxies.slice(1));
-                }
+                // flag this proxy as bad
+                for (var i = 0; i < PROXIES.length; i++)
+                    if (this.url.indexOf(PROXIES[i]) >= 0) {
+                        console.log("Marking as bad: " + PROXIES[i]);
+                        badProxies[PROXIES[i]] = true;
+                    }
+
+                search(location, url, proxies.slice(1));
 
                 if (errorThrown == "Too Many Requests" && !tooManyRequestsErrorShown) {
                     alert("You've made several searches and cannot do anymore now. Please try again in an hour.");
@@ -119,7 +141,9 @@
                 console.log("searchManager interval cleared");
                 clearInterval(intervalResource);
                 intervalResource = null;
-                $("#status").html("");
+                $("#status").html(
+                    someQueriesFailed ? "Some results may have failed to load, please try again." : ""
+                );
                 return;
             }
 
@@ -139,14 +163,9 @@
 
         var proxyStartIndex = 0;
         function getRoundRobinListOfProxies() {
-            var proxies = [
-                "http://76.72.152.25",
-                "http://10.0.1.101"
-            ];
-
-            splicedProxies = proxies.slice(proxyStartIndex);
-            splicedProxies = splicedProxies.concat(proxies.slice(0, proxyStartIndex));
-            proxyStartIndex = (proxyStartIndex + 1) % proxies.length;
+            splicedProxies = PROXIES.slice(proxyStartIndex);
+            splicedProxies = splicedProxies.concat(PROXIES.slice(0, proxyStartIndex));
+            proxyStartIndex = (proxyStartIndex + 1) % PROXIES.length;
 
             return splicedProxies;
         }
