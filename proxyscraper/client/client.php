@@ -22,8 +22,11 @@ if (!file_exists($endpointFilename) || filemtime($endpointFilename) < time() - 3
 // determine client ID
 $idFile = __DIR__ . '/client_id';
 if (!file_exists($idFile))
-    file_put_contents($idFile, uniqid());
+    file_put_contents($idFile, uniqid(exec('hostname')));
 $clientId = file_get_contents($idFile);
+
+// prevent all clients from starting right on the minute
+sleep(rand(1, 30));
 
 // get instructions
 $instructions = @json_decode(file_get_contents($endpoint . '?clientVersion=' . $clientVersion));

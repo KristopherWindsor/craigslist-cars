@@ -81,6 +81,10 @@ class LogRequest {
 	}
 }
 
+function logEvent($event) {
+	file_put_contents(__DIR__ . '/data/events.log', date(\DateTime::ATOM) . "\t" . $event . "\n", FILE_APPEND);
+}
+
 $requestBody    = file_get_contents('php://input');
 $requestHeaders = getallheaders();
 $contentType    = $requestHeaders['Content-Type'] ?? '';
@@ -183,6 +187,8 @@ function acceptRss($requestBody, $requestHeaders, $datastore) {
 		http_response_code(400);
 		return '';
 	}
+
+	logEvent(count($pages) . ' pages fetched from RSS ' . $rssSource);
 
 	foreach ($pages as list($url, $dateUpdated)) {
 		// Put new page in the queue
