@@ -11,7 +11,7 @@ if ($hibernateUntil && $hibernateUntil > time())
 // determine endpoint to get/post to
 $endpointFilename = __DIR__ . '/api.dat';
 if (!file_exists($endpointFilename) || filemtime($endpointFilename) < time() - 3600 * 4) {
-    $endpoint = file_get_contents('http://windsorportal.com/acerbox.txt');
+    $endpoint = trim(file_get_contents('http://windsorportal.com/acerbox.txt'));
     if (!$endpoint)
         die();
     file_put_contents($endpointFilename, $endpoint);
@@ -47,6 +47,7 @@ if ($instructions->action == 'getPages') {
             'X-CLIENT-VERSION: ' . $CLIENT_VERSION,
         ));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         curl_close($ch);
         if (!$output)
@@ -65,9 +66,10 @@ if ($instructions->action == 'getPages') {
         if (!$rssContent)
             die();
 
-        $results = new SimpleXMLElement($rss);
+        $results = new SimpleXMLElement($rssContent);
         foreach ($results->item as $item) {
-            $date = (string) $item->{'dc:date'};
+            $dateArray = $item->xpath('dc:date');
+            $date = (string) $dateArray[0];
             if (new \DateTime($date) <= $loopUntil)
                 break 2;
             $pages[] = [(string) $item->link, $date];
@@ -75,6 +77,10 @@ if ($instructions->action == 'getPages') {
 
         $offset += 25;
     } while ($offset < 500); // Want to get all results but need to stop at some point
+
+    // nothing do to
+    if (!$pages)
+        die();
 
     // Send pages[] back to server
     $ch = curl_init();
@@ -86,6 +92,7 @@ if ($instructions->action == 'getPages') {
         'X-CLIENT-VERSION: ' . $CLIENT_VERSION,
     ));
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pages));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $output = curl_exec($ch);
     curl_close($ch);
 
