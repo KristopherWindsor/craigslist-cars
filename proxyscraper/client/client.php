@@ -79,7 +79,7 @@ if ($instructions->action == 'getPages') {
         }
 
         $offset += 25;
-    } while ($offset < 500); // Want to get all results but need to stop at some point
+    } while ($offset < $instructions->maxCount); // Want to get all results but need to stop at some point
 
     // nothing do to
     if (!$pages)

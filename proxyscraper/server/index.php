@@ -73,6 +73,7 @@ class LogRequest {
 
 	public function logWithResponse($code, $response) {
 		file_put_contents(__DIR__ . '/data/requestresponse.log', json_encode([
+			'date'       => date(\DateTime::ATOM),
 			'reqHeaders' => $this->requestHeaders,
 			'reqBody'    => strlen($this->requestBody) > 5000 ? '<snip ' . strlen($this->requestBody) . ' chars>' : $this->requestBody,
 			'resCode'    => $code,
@@ -114,29 +115,6 @@ function provideHibernateResponse() {
 function provideInstructions($requestBody, $requestHeaders, $datastore) {
 	header('Content-Type: application/json');
 
-	// Pending pages have priority
-	$queue = array_filter($datastore->data['pageQueue'], function ($item) {
-		if (!$item)
-			return true;
-		$date = new \DateTime($item);
-		return $date < new \DateTime('2 minutes ago');
-	});
-	if ($queue) {
-		$urls = [];
-		foreach ($queue as $pageUrl => $_) {
-			$datastore->data['pageQueue'][$pageUrl] = date(DateTime::ATOM);
-			$urls[] = $pageUrl;
-			if (count($urls) > 30)
-				break;
-		}
-		$datastore->save();
-		return json_encode([
-			'action'                => 'getPages',
-			'sleepDurationMicrosec' => 1000 * 1000,
-			'urls'                  => $urls,
-		]);
-	}
-
 	// Which RSS source has been polled the least recently?
 	uasort($datastore->data['rssSources'], function ($a, $b) {
 		$a = $a['polledDate']; if (!$a) return -1;
@@ -147,20 +125,56 @@ function provideInstructions($requestBody, $requestHeaders, $datastore) {
 	    if ($a == $b) return 0;
 	    return ($a > $b) ? -1 : 1;
 	});
+
+	// Find "real" page queue (not counting pending pages)
+	$queue = array_filter($datastore->data['pageQueue'], function ($item) {
+		if (!$item)
+			return true;
+		$date = new \DateTime($item);
+		return $date < new \DateTime('2 minutes ago');
+	});
+
+	$isQueueHeavy = (count($queue) > 1000);
+
+	// Priority 1 -- keep the page queue full to avoid the nothing-to-do/hibernate case
+	if (!$isQueueHeavy && $rssInstructions = provideInstructionsForRss($datastore))
+		return $rssInstructions;
+
+	// Priority 2 -- process queue
+	if ($queue) {
+		$urls = [];
+		foreach ($queue as $pageUrl => $_) {
+			$datastore->data['pageQueue'][$pageUrl] = date(DateTime::ATOM);
+			$urls[] = $pageUrl;
+			if (count($urls) > ($isQueueHeavy ? 50 : 30))
+				break;
+		}
+		$datastore->save();
+		return json_encode([
+			'action'                => 'getPages',
+			'sleepDurationMicrosec' => 500 * 1000,
+			'urls'                  => $urls,
+		]);
+	}
+
+	// Nothing to do --> hibernate
+	return provideHibernateResponse();
+}
+
+function provideInstructionsForRss($datastore) {
 	foreach ($datastore->data['rssSources'] as $rssSource => $data) {
-		if (!$data['polledDate'] || new \DateTime($data['polledDate']) < new \DateTime('5 minutes ago')) {
+		if (!$data['polledDate'] || new \DateTime($data['polledDate']) < new \DateTime('15 minutes ago')) {
 			$datastore->data['rssSources'][$rssSource]['polledDate'] = date(\DateTime::ATOM);
 			$datastore->save();
 			return json_encode([
 				'action'    => 'getRSS',
 				'url'       => $rssSource,
 				'loopUntil' => $data['newestItem'] ?: (new \DateTime('7 days ago'))->format(\DateTime::ATOM),
+				'maxCount'  => 2000,
 			]);
 		}
 	}
-
-	// Nothing to do --> hibernate
-	return provideHibernateResponse();
+	return null;
 }
 
 function acceptPage($requestBody, $requestHeaders, $datastore) {
@@ -191,6 +205,9 @@ function acceptRss($requestBody, $requestHeaders, $datastore) {
 	logEvent(count($pages) . ' pages fetched from RSS ' . $rssSource);
 
 	foreach ($pages as list($url, $dateUpdated)) {
+		if (!$dateUpdated)
+			logEvent('Empty date item=' . $url . ' rss=' . $rssSource);
+
 		// Put new page in the queue
 		if (empty($datastore->data['pageQueue'][$url]))
 			$datastore->data['pageQueue'][$url] = null;
