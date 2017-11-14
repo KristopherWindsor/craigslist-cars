@@ -8,6 +8,12 @@ $hibernateUntil = @file_get_contents($hibernateFilename);
 if ($hibernateUntil && $hibernateUntil > time())
     die();
 
+// determine client ID
+$idFile = __DIR__ . '/client_id';
+if (!file_exists($idFile))
+    file_put_contents($idFile, uniqid(exec('hostname')));
+$clientId = file_get_contents($idFile);
+
 // determine endpoint to get/post to
 $endpointFilename = __DIR__ . '/api.dat';
 if (!file_exists($endpointFilename) || filemtime($endpointFilename) < time() - 3600 * 4) {
@@ -18,18 +24,13 @@ if (!file_exists($endpointFilename) || filemtime($endpointFilename) < time() - 3
 } else {
     $endpoint = file_get_contents($endpointFilename);
 }
-
-// determine client ID
-$idFile = __DIR__ . '/client_id';
-if (!file_exists($idFile))
-    file_put_contents($idFile, uniqid(exec('hostname')));
-$clientId = file_get_contents($idFile);
+$endpoint .= '?cId=' . $clientId . '&cV=' . $CLIENT_VERSION . '&do=';
 
 // prevent all clients from starting right on the minute
 sleep(rand(1, 30));
 
 // get instructions
-$instructions = @json_decode(file_get_contents($endpoint . '?clientVersion=' . $clientVersion));
+$instructions = @json_decode(file_get_contents($endpoint . 'instructions'));
 if (!$instructions) {
     file_put_contents($hibernateFilename, time() + 600);
     die();
@@ -42,7 +43,7 @@ if ($instructions->action == 'getPages') {
             break;
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $endpoint);
+        curl_setopt($ch, CURLOPT_URL, $endpoint . 'newPage');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: text/html',
             'X-SOURCE-URL: ' . $url,
@@ -87,7 +88,7 @@ if ($instructions->action == 'getPages') {
 
     // Send pages[] back to server
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $endpoint);
+    curl_setopt($ch, CURLOPT_URL, $endpoint . 'rssResults');
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json',
         'X-SOURCE-RSS: ' . $instructions->url,

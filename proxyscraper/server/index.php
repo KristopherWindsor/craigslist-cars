@@ -74,6 +74,7 @@ class LogRequest {
 	public function logWithResponse($code, $response) {
 		file_put_contents(__DIR__ . '/data/requestresponse.log', json_encode([
 			'date'       => date(\DateTime::ATOM),
+			'request'    => $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'],
 			'reqHeaders' => $this->requestHeaders,
 			'reqBody'    => strlen($this->requestBody) > 5000 ? '<snip ' . strlen($this->requestBody) . ' chars>' : $this->requestBody,
 			'resCode'    => $code,
@@ -91,18 +92,19 @@ $requestHeaders = getallheaders();
 $contentType    = $requestHeaders['Content-Type'] ?? '';
 $datastore      = new Datastore();
 $logRequest     = new LogRequest($requestHeaders, $requestBody);
+$action         = $_GET['do'] ?? null;
 
 if ($DISABLED) {
 	$response = provideHibernateResponse();
-} elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
+} elseif ($action == 'instructions') {
 	$response = provideInstructions($requestBody, $requestHeaders, $datastore);
-} elseif ($contentType == 'application/json') {
+} elseif ($action == 'rssResults' && $contentType == 'application/json') {
 	$response = acceptRss($requestBody, $requestHeaders, $datastore);
-} elseif ($contentType == 'text/html') {
+} elseif ($action == 'newPage' && $contentType == 'text/html') {
 	$response = acceptPage($requestBody, $requestHeaders, $datastore);
 } else {
 	http_response_code(400);
-	$response = '';
+	$response = 'bad request';
 }
 
 echo $response;
