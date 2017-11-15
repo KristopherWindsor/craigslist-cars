@@ -152,8 +152,8 @@ $exLock->cleanup();
 echo $response;
 $logRequest->logWithResponse(http_response_code(), $response);
 
-function provideHibernateResponse() {
-    return json_encode(['action' => 'hibernate', 'seconds' => 300]);
+function provideHibernateResponse($duration = 300) {
+    return json_encode(['action' => 'hibernate', 'seconds' => $duration]);
 }
 
 function provideStats($requestBody, $requestHeaders, $datastore) {
@@ -182,10 +182,10 @@ function provideInstructions($requestBody, $requestHeaders, $datastore, $clientI
         return 'missing client ID';
     }
     if (empty($datastore->data['clients'][$clientId]))
-        $datastore->data['clients'][$clientId] = ['lastActive' => null, 'hibernate' => null, 'pagesProvided' => 0];
+        $datastore->data['clients'][$clientId] = ['lastActive' => null, 'hibernate' => null, 'pagesProvided' => 0, 'initTime' => time()];
     $datastore->data['clients'][$clientId]['lastActive'] = time();
     $datastore->data['clients'] = array_filter($datastore->data['clients'], function ($item) {
-        return $item['lastActive'] > time() - 3600;
+        return $item['lastActive'] > time() - 3600 && isset($item['initTime']) /* remove entries that don't have newest field */;
     });
 
     header('Content-Type: application/json');
@@ -204,39 +204,50 @@ function provideInstructions($requestBody, $requestHeaders, $datastore, $clientI
     // Find "real" page queue (not counting pending pages)
     $queue = getPageQueueWithoutPendingPages($datastore);
 
-    $isQueueHeavy = (count($queue) > 8000);
+    // Some clients are made to sleep until the queue reaches a certain size (ie. either for peak hours or when other clients have gone offline)
+    $hibernateDuration = 600;
+    if (!shouldClientSleep($clientId, count($queue))) {
+        // Priority 1 -- keep the page queue full to avoid the nothing-to-do/hibernate case
+        if (count($queue) < 8000 && $rssInstructions = provideInstructionsForRss($datastore))
+            return $rssInstructions;
 
-    // Priority 1 -- keep the page queue full to avoid the nothing-to-do/hibernate case
-    if (!$isQueueHeavy && $rssInstructions = provideInstructionsForRss($datastore))
-        return $rssInstructions;
-
-    // Priority 2 -- process queue
-    if ($queue) {
-        $urls = [];
-        $howManyToGive = 30 + count($queue) / 50;
-        foreach ($queue as $pageUrl => $_) {
-            $datastore->data['pageQueue'][$pageUrl] = date(DateTime::ATOM);
-            $urls[] = $pageUrl;
-            if (count($urls) >= $howManyToGive)
-                break;
+        // Priority 2 -- process queue
+        if ($queue) {
+            $urls = [];
+            $howManyToGive = 30 + count($queue) / 50;
+            foreach ($queue as $pageUrl => $_) {
+                $datastore->data['pageQueue'][$pageUrl] = date(DateTime::ATOM);
+                $urls[] = $pageUrl;
+                if (count($urls) >= $howManyToGive)
+                    break;
+            }
+            $datastore->save();
+            return json_encode([
+                'action'                => 'getPages',
+                'sleepDurationMicrosec' => 500 * 1000,
+                'urls'                  => $urls,
+            ]);
         }
-        $datastore->save();
-        return json_encode([
-            'action'                => 'getPages',
-            'sleepDurationMicrosec' => 500 * 1000,
-            'urls'                  => $urls,
-        ]);
+
+        $hibernateDuration = 180;
     }
 
     // Nothing to do --> hibernate
-    $datastore->data['clients'][$clientId]['hibernate'] = time() + 300;
+    $datastore->data['clients'][$clientId]['hibernate'] = time() + $hibernateDuration;
     $datastore->save();
-    return provideHibernateResponse();
+    return provideHibernateResponse($hibernateDuration);
+}
+
+function shouldClientSleep($clientId, $pageQueueSize) {
+    $limits = [
+        'KristopherMacbook' => 800,
+    ];
+    return isset($limits[$clientId]) && $limits[$clientId] > $pageQueueSize;
 }
 
 function provideInstructionsForRss($datastore) {
     foreach ($datastore->data['rssSources'] as $rssSource => $data) {
-        if (!$data['polledDate'] || new \DateTime($data['polledDate']) < new \DateTime('15 minutes ago')) {
+        if (!$data['polledDate'] || new \DateTime($data['polledDate']) < new \DateTime('10 minutes ago')) {
             $datastore->data['rssSources'][$rssSource]['polledDate'] = date(\DateTime::ATOM);
             $datastore->save();
             return json_encode([

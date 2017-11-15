@@ -45,6 +45,8 @@
 
         <p id="summary"></p>
 
+        <p id="clientList"><p>
+
         <script src="http://d3js.org/d3.v3.min.js"></script>
         <script>
 
@@ -88,7 +90,7 @@
                 .range([0, width])
 
             var y = d3.scale.linear()
-                .domain([0, 55])
+                .domain([0, 60])
                 .range([height, 0])
 
             var line = d3.svg.line()
@@ -173,7 +175,36 @@
                 }
                 console.log(graphData);
                 $("#summary").text("Page queue: " + data.pageQueueSize + " total / " + data.pageQueueSizeWithoutPending + " available, last RSS burst size: " + lastBurst);
+
+                var text = "";
+                for (var i in data.clients) {
+                    text += i + " -- ";
+                    // hibernating right now
+                    if (data.clients[i].hibernate * 1000 > Date.now())
+                        text += "hibernating for " + formatTimeDuration(data.clients[i].hibernate * 1000 - Date.now());
+                    // recently active
+                    else if (data.clients[i].lastActive * 1000 > Date.now() - 120000)
+                        text += "active for " + formatTimeDuration(Date.now() - data.clients[i].initTime * 1000);
+                    // hibernation ended recently, but client hasn't come back yet
+                    else if (data.clients[i].hibernate * 1000 > Date.now() - 120000)
+                        text += "hibernation expiring";
+                    else
+                        text += "inactive";
+                    if (data.clients[i].pagesProvided)
+                        text += " (" + data.clients[i].pagesProvided + " pages scraped)";
+                    text += '<br>';
+                }
+                $("#clientList").html(text);
             })
+        }
+
+        function formatTimeDuration(ms) {
+            var sec = ms / 1000;
+            if (sec < 60)
+                return sec + " sec.";
+            if (sec < 3600)
+                return Math.floor(sec / 60) + " min.";
+            return Math.floor(sec / 3600) + " hr.";
         }
 
         graph1();
