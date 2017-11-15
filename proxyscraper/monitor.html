@@ -76,9 +76,16 @@
                         return 0
                     })
                 },
-                lastAcceptedRss: {
+                rssBurst1: {
                     value: 0,
                     color: 'red',
+                    data: d3.range(limit).map(function() {
+                        return 0
+                    })
+                },
+                rssBurst2: {
+                    value: 0,
+                    color: 'orange',
                     data: d3.range(limit).map(function() {
                         return 0
                     })
@@ -167,14 +174,19 @@
 
         function getActualData() {
             $.get( "http://73.241.1.76/proxyscraper/?do=stats", function( data ) {
-                var lastBurst = data.lastAcceptedRss ? data.lastAcceptedRss[0] : 0;
                 graphData = {
                     pageQueueSize: Math.sqrt(data.pageQueueSize),
                     pageQueueSizeWithoutPending: Math.sqrt(data.pageQueueSizeWithoutPending),
-                    lastAcceptedRss: Math.sqrt(lastBurst)
+                    rssBurst1: 0,
+                    rssBurst2: 0
                 }
+                if (data.rssBursts[0] && data.rssBursts[0][2] * 1000 > Date.now() - 60000)
+                    graphData.rssBurst1 = Math.sqrt(data.rssBursts[0][1]);
+                if (data.rssBursts[1] && data.rssBursts[1][2] * 1000 > Date.now() - 60000)
+                    graphData.rssBurst2 = Math.sqrt(data.rssBursts[1][1]);
+
                 console.log(graphData);
-                $("#summary").text("Page queue: " + data.pageQueueSize + " total / " + data.pageQueueSizeWithoutPending + " available, last RSS burst size: " + lastBurst);
+                $("#summary").text("Page queue: " + data.pageQueueSize + " total / " + data.pageQueueSizeWithoutPending + " available");
 
                 var text = "";
                 for (var i in data.clients) {
@@ -201,7 +213,7 @@
         function formatTimeDuration(ms) {
             var sec = ms / 1000;
             if (sec < 60)
-                return sec + " sec.";
+                return Math.floor(sec) + " sec.";
             if (sec < 3600)
                 return Math.floor(sec / 60) + " min.";
             return Math.floor(sec / 3600) + " hr.";

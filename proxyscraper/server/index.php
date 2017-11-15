@@ -9,8 +9,10 @@ class Datastore {
         $this->filename = __DIR__ . '/data/datastore.json';
         $content = @file_get_contents($this->filename);
         $this->data = @json_decode($content, true) ?: [
-            'pageQueue' => [],
+            'pageQueue'  => [],
             'rssSources' => $this->getInitialRssSources(),
+            'clients'    => [],
+            'rssBurst'   => [],
         ];
     }
 
@@ -157,12 +159,17 @@ function provideHibernateResponse($duration = 300) {
 }
 
 function provideStats($requestBody, $requestHeaders, $datastore) {
+    $bursts = [];
+    foreach ($datastore->data['rssBurst'] as $url => list($size, $timestamp))
+        $bursts[] = [$url, $size, $timestamp];
+
     header('Content-Type: application/json');
     return json_encode([
         'pageQueueSize'               => count($datastore->data['pageQueue']),
         'pageQueueSizeWithoutPending' => count(getPageQueueWithoutPendingPages($datastore)),
         'lastAcceptedRss'             => @json_decode(file_get_contents(__DIR__ . '/data/lastAcceptedRss')),
         'clients'                     => $datastore->data['clients'],
+        'rssBursts'                   => $bursts,
     ]);
 }
 
@@ -291,6 +298,7 @@ function acceptRss($requestBody, $requestHeaders, $datastore) {
 
     logEvent(count($pages) . ' pages fetched from RSS ' . $rssSource);
     file_put_contents(__DIR__ . '/data/lastAcceptedRss', json_encode([count($pages), time()]));
+    $datastore->data['rssBurst'][$rssSource] = [count($pages), time()];
 
     foreach ($pages as list($url, $dateUpdated)) {
         if (!$dateUpdated)
