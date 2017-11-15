@@ -124,6 +124,7 @@ $requestHeaders = getallheaders();
 $contentType    = $requestHeaders['Content-Type'] ?? '';
 $logRequest     = new LogRequest($requestHeaders, $requestBody);
 $action         = $_GET['do'] ?? null;
+$clientId       = $_GET['cId'] ?? null;
 
 // Use exclusive locking so we don't have 2 processes edit the data file at the same time
 $exLock         = new ExclusiveLock();
@@ -136,11 +137,11 @@ if ($DISABLED) {
 } elseif ($action == 'stats') {
     $response = provideStats($requestBody, $requestHeaders, $datastore);
 } elseif ($action == 'instructions') {
-    $response = provideInstructions($requestBody, $requestHeaders, $datastore);
+    $response = provideInstructions($requestBody, $requestHeaders, $datastore, $clientId);
 } elseif ($action == 'rssResults' && $contentType == 'application/json') {
     $response = acceptRss($requestBody, $requestHeaders, $datastore);
 } elseif ($action == 'newPage' && $contentType == 'text/html') {
-    $response = acceptPage($requestBody, $requestHeaders, $datastore);
+    $response = acceptPage($requestBody, $requestHeaders, $datastore, $clientId);
 } else {
     http_response_code(400);
     $response = 'bad request';
@@ -161,6 +162,7 @@ function provideStats($requestBody, $requestHeaders, $datastore) {
         'pageQueueSize'               => count($datastore->data['pageQueue']),
         'pageQueueSizeWithoutPending' => count(getPageQueueWithoutPendingPages($datastore)),
         'lastAcceptedRss'             => @json_decode(file_get_contents(__DIR__ . '/data/lastAcceptedRss')),
+        'clients'                     => $datastore->data['clients'],
     ]);
 }
 
@@ -173,7 +175,19 @@ function getPageQueueWithoutPendingPages($datastore) {
     });
 }
 
-function provideInstructions($requestBody, $requestHeaders, $datastore) {
+function provideInstructions($requestBody, $requestHeaders, $datastore, $clientId) {
+
+    if (!$clientId) {
+        http_response_code(400);
+        return 'missing client ID';
+    }
+    if (empty($datastore->data['clients'][$clientId]))
+        $datastore->data['clients'][$clientId] = ['lastActive' => null, 'hibernate' => null, 'pagesProvided' => 0];
+    $datastore->data['clients'][$clientId]['lastActive'] = time();
+    $datastore->data['clients'] = array_filter($datastore->data['clients'], function ($item) {
+        return $item['lastActive'] > time() - 3600;
+    });
+
     header('Content-Type: application/json');
 
     // Which RSS source has been polled the least recently?
@@ -190,7 +204,7 @@ function provideInstructions($requestBody, $requestHeaders, $datastore) {
     // Find "real" page queue (not counting pending pages)
     $queue = getPageQueueWithoutPendingPages($datastore);
 
-    $isQueueHeavy = (count($queue) > 1000);
+    $isQueueHeavy = (count($queue) > 8000);
 
     // Priority 1 -- keep the page queue full to avoid the nothing-to-do/hibernate case
     if (!$isQueueHeavy && $rssInstructions = provideInstructionsForRss($datastore))
@@ -199,10 +213,11 @@ function provideInstructions($requestBody, $requestHeaders, $datastore) {
     // Priority 2 -- process queue
     if ($queue) {
         $urls = [];
+        $howManyToGive = 30 + count($queue) / 50;
         foreach ($queue as $pageUrl => $_) {
             $datastore->data['pageQueue'][$pageUrl] = date(DateTime::ATOM);
             $urls[] = $pageUrl;
-            if (count($urls) > ($isQueueHeavy ? 50 : 30))
+            if (count($urls) >= $howManyToGive)
                 break;
         }
         $datastore->save();
@@ -214,6 +229,8 @@ function provideInstructions($requestBody, $requestHeaders, $datastore) {
     }
 
     // Nothing to do --> hibernate
+    $datastore->data['clients'][$clientId]['hibernate'] = time() + 300;
+    $datastore->save();
     return provideHibernateResponse();
 }
 
@@ -233,12 +250,15 @@ function provideInstructionsForRss($datastore) {
     return null;
 }
 
-function acceptPage($requestBody, $requestHeaders, $datastore) {
+function acceptPage($requestBody, $requestHeaders, $datastore, $clientId) {
     $sourceUrl = $requestHeaders['X-SOURCE-URL'] ?? null;
-    if (!$sourceUrl || empty($datastore->data['pageQueue'][$sourceUrl])) {
+    if (!$sourceUrl || empty($datastore->data['pageQueue'][$sourceUrl]) || !$clientId) {
         http_response_code(400);
         return '';
     }
+
+    // Track client activity
+    @$datastore->data['clients'][$clientId]['pagesProvided']++;
 
     // Take page out of pending queue
     unset($datastore->data['pageQueue'][$sourceUrl]);

