@@ -52,8 +52,12 @@ class Datastore {
         $result = [];
         foreach ($sources as $url)
             $result[$url] = [
-                'polledDate' => null,
-                'newestItem' => null,
+                // Last time a client got the instruction to query the source, or a client provided results for the source
+                'lastActivity' => null,
+                // Last time a client provided results for the source and indicated that it was done querying the source
+                'lastComplete' => null,
+                // Newest item found in the source -- date/time comes from the RSS
+                'newestItem'   => null,
             ];
         return $result;
     }
@@ -167,7 +171,6 @@ function provideStats($requestBody, $requestHeaders, $datastore) {
     return json_encode([
         'pageQueueSize'               => count($datastore->data['pageQueue']),
         'pageQueueSizeWithoutPending' => count(getPageQueueWithoutPendingPages($datastore)),
-        'lastAcceptedRss'             => @json_decode(file_get_contents(__DIR__ . '/data/lastAcceptedRss')),
         'clients'                     => $datastore->data['clients'],
         'rssBursts'                   => $bursts,
     ]);
@@ -183,29 +186,52 @@ function getPageQueueWithoutPendingPages($datastore) {
 }
 
 function provideInstructions($requestBody, $requestHeaders, $datastore, $clientId) {
-
     if (!$clientId) {
         http_response_code(400);
         return 'missing client ID';
     }
-    if (empty($datastore->data['clients'][$clientId]))
+
+    if (empty($datastore->data['clients'][$clientId])) {
         $datastore->data['clients'][$clientId] = ['lastActive' => null, 'hibernate' => null, 'pagesProvided' => 0, 'initTime' => time()];
+    }
     $datastore->data['clients'][$clientId]['lastActive'] = time();
     $datastore->data['clients'] = array_filter($datastore->data['clients'], function ($item) {
-        return $item['lastActive'] > time() - 3600 && isset($item['initTime']) /* remove entries that don't have newest field */;
+        return $item['lastActive'] > time() - 3600 * 24 * 5 && isset($item['initTime']); // remove entries that don't have newest field
     });
 
     header('Content-Type: application/json');
 
-    // Which RSS source has been polled the least recently?
+    // Sort RSS sources -- priority queue
     uasort($datastore->data['rssSources'], function ($a, $b) {
-        $a = $a['polledDate']; if (!$a) return -1;
-        $b = $b['polledDate']; if (!$b) return 1;
-        $a = new \DateTime($a);
-        $b = new \DateTime($b);
+        $thirtySecAgo  = new \DateTime('30 seconds ago');
+        $fiveMinAgo    = new \DateTime('5 minutes ago');
+        $aLastActivity = new \DateTime($a['lastActivity'] ?: '1 hour ago');
+        $aLastComplete = new \DateTime($a['lastComplete'] ?: '1 hour ago');
+        $bLastActivity = new \DateTime($b['lastActivity'] ?: '1 hour ago');
+        $bLastComplete = new \DateTime($b['lastComplete'] ?: '1 hour ago');
 
-        if ($a == $b) return 0;
-        return ($a > $b) ? -1 : 1;
+        $aScore = 0;
+        if ($aLastActivity > $aLastComplete) {
+            if ($aLastActivity < $thirtySecAgo) {
+                // The fetching has timed out and should be restarted
+                $aScore = time() - $aLastComplete->getTimeStamp();
+            }
+        } elseif ($aLastComplete < $fiveMinAgo) {
+            $aScore = time() - $aLastComplete->getTimeStamp();
+        }
+
+        $bScore = 0;
+        if ($bLastActivity > $bLastComplete) {
+            if ($bLastActivity < $thirtySecAgo) {
+                // The fetching has timed out and should be restarted
+                $bScore = time() - $bLastComplete->getTimeStamp();
+            }
+        } elseif ($bLastComplete < $fiveMinAgo) {
+            $bScore = time() - $bLastComplete->getTimeStamp();
+        }
+
+        if ($aScore == $bScore) return 0;
+        return ($aScore > $bScore) ? -1 : 1;
     });
 
     // Find "real" page queue (not counting pending pages)
@@ -254,16 +280,24 @@ function shouldClientSleep($clientId, $pageQueueSize) {
 
 function provideInstructionsForRss($datastore) {
     foreach ($datastore->data['rssSources'] as $rssSource => $data) {
-        if (!$data['polledDate'] || new \DateTime($data['polledDate']) < new \DateTime('10 minutes ago')) {
-            $datastore->data['rssSources'][$rssSource]['polledDate'] = date(\DateTime::ATOM);
-            $datastore->save();
-            return json_encode([
-                'action'    => 'getRSS',
-                'url'       => $rssSource,
-                'loopUntil' => $data['newestItem'] ?: (new \DateTime('7 days ago'))->format(\DateTime::ATOM),
-                'maxCount'  => 2000,
-            ]);
+        $lastActivity = new \DateTime($data['lastActivity'] ?: '1 hour ago');
+        $lastComplete = new \DateTime($data['lastComplete'] ?: '1 hour ago');
+
+        if ($lastActivity > $lastComplete) {
+            if ($lastActivity >= new \DateTime('30 seconds ago'))
+                break;
+        } elseif ($lastComplete >= new \DateTime('5 minutes ago')) {
+            break;
         }
+
+        $datastore->data['rssSources'][$rssSource]['lastActivity'] = date(\DateTime::ATOM);
+        $datastore->save();
+        return json_encode([
+            'action'    => 'getRSS',
+            'url'       => $rssSource,
+            'loopUntil' => $data['newestItem'] ?: (new \DateTime('7 days ago'))->format(\DateTime::ATOM),
+            'maxCount'  => 2000,
+        ]);
     }
     return null;
 }
@@ -290,15 +324,20 @@ function acceptPage($requestBody, $requestHeaders, $datastore, $clientId) {
 
 function acceptRss($requestBody, $requestHeaders, $datastore) {
     $rssSource = $requestHeaders['X-SOURCE-RSS'] ?? null;
+    $isComplete = $requestHeaders['X-JOB-COMPLETE'] ?? null;
     $pages = @json_decode($requestBody, true);
-    if (!$pages || !$rssSource) {
+    if (!is_array($pages) || !$rssSource) {
         http_response_code(400);
         return '';
     }
 
     logEvent(count($pages) . ' pages fetched from RSS ' . $rssSource);
-    file_put_contents(__DIR__ . '/data/lastAcceptedRss', json_encode([count($pages), time()]));
-    $datastore->data['rssBurst'][$rssSource] = [count($pages), time()];
+    // Add to the count if we're still on the same query
+    if (isset($datastore->data['rssBurst'][$rssSource]) && $datastore->data['rssBurst'][$rssSource][1] > time() - 30) {
+        $datastore->data['rssBurst'][$rssSource] = [count($pages) + $datastore->data['rssBurst'][$rssSource][0], time()];
+    } else {
+        $datastore->data['rssBurst'][$rssSource] = [count($pages), time()];
+    }
 
     foreach ($pages as list($url, $dateUpdated)) {
         if (!$dateUpdated)
@@ -307,9 +346,15 @@ function acceptRss($requestBody, $requestHeaders, $datastore) {
         // Put new page in the queue
         if (empty($datastore->data['pageQueue'][$url]))
             $datastore->data['pageQueue'][$url] = null;
-        // Update newestItem time for the RSS source
-        if (!$datastore->data['rssSources'][$rssSource]['newestItem'] || new \DateTime($dateUpdated) > new \DateTime($datastore->data['rssSources'][$rssSource]['newestItem']))
+
+        // Update RSS source
+        if (!$datastore->data['rssSources'][$rssSource]['newestItem'] || new \DateTime($dateUpdated) > new \DateTime($datastore->data['rssSources'][$rssSource]['newestItem'])) {
             $datastore->data['rssSources'][$rssSource]['newestItem'] = (new \DateTime($dateUpdated))->format(\DateTime::ATOM);
+        }
+        $datastore->data['rssSources'][$rssSource]['lastActivity'] = date(\DateTime::ATOM);
+        if ($isComplete) {
+            $datastore->data['rssSources'][$rssSource]['lastComplete'] = date(\DateTime::ATOM);
+        }
     }
     $datastore->save();
 
