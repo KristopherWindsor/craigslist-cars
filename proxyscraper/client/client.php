@@ -63,12 +63,14 @@ if ($instructions->action == 'getPages') {
     $loopUntil = new \DateTime($instructions->loopUntil);
     $offset = 0;
     $pages = [];
+
     do {
         $url = $instructions->url . $offset;
 
         $rssContent = file_get_contents($url);
         if (!$rssContent)
             die();
+        $rssContent = preg_replace('/[[:^print:]]/', '', $rssContent);
 
         $results = new SimpleXMLElement($rssContent);
         foreach ($results->item as $item) {
@@ -81,10 +83,6 @@ if ($instructions->action == 'getPages') {
 
         $offset += 25;
     } while ($offset < $instructions->maxCount); // Want to get all results but need to stop at some point
-
-    // nothing do to
-    if (!$pages)
-        die();
 
     // Send pages[] back to server
     $ch = curl_init();
