@@ -264,6 +264,8 @@ function getRssSourcePriorityQueueScore($rssSource) {
     } elseif ($lastComplete < $fiveMinAgo) {
         $score = time() - $lastComplete->getTimeStamp();
     }
+
+    logEvent('rss scored: ' . $score . ' lastActivity= ' . $rssSource['lastActivity'] . ' lastComplete=' . $rssSource['lastComplete']);
     return $score;
 }
 
@@ -272,21 +274,27 @@ function shouldClientSleep($clientId, $pageQueueSize, $rssSources) {
         'KristopherMacbook' => ['pageQueue' => 800, 'rssScore' => 60 * 15],
     ];
 
-    if (empty($limits[$clientId]))
+    if (empty($limits[$clientId])) {
+        logEvent("shouldClientSleep false not whitelisted $clientId");
         return false;
+    }
 
-    if ($limits[$clientId]['pageQueue'] < $pageQueueSize)
-        return true;
+    if ($limits[$clientId]['pageQueue'] < $pageQueueSize) {
+        logEvent("shouldClientSleep true page queue large $pageQueueSize vs. " . $limits[$clientId]['pageQueue']);
+        return false;
+    }
 
     $highscore = 0;
     foreach ($rssSources as $rssSource) {
         $highscore = getRssSourcePriorityQueueScore($rssSource);
         break;
     }
-    if ($limits[$clientId]['rssScore'] < $highscore)
-        return true;
+    if ($limits[$clientId]['rssScore'] < $highscore) {
+        logEvent("shouldClientSleep true large RSS score $highscore vs. " . $limits[$clientId]['rssScore']);
+        return false;
+    }
 
-    return false;
+    return true;
 }
 
 function provideInstructionsForRss($datastore) {
