@@ -203,32 +203,8 @@ function provideInstructions($requestBody, $requestHeaders, $datastore, $clientI
 
     // Sort RSS sources -- priority queue
     uasort($datastore->data['rssSources'], function ($a, $b) {
-        $thirtySecAgo  = new \DateTime('30 seconds ago');
-        $fiveMinAgo    = new \DateTime('5 minutes ago');
-        $aLastActivity = new \DateTime($a['lastActivity'] ?: '1 hour ago');
-        $aLastComplete = new \DateTime($a['lastComplete'] ?: '1 hour ago');
-        $bLastActivity = new \DateTime($b['lastActivity'] ?: '1 hour ago');
-        $bLastComplete = new \DateTime($b['lastComplete'] ?: '1 hour ago');
-
-        $aScore = 0;
-        if ($aLastActivity > $aLastComplete) {
-            if ($aLastActivity < $thirtySecAgo) {
-                // The fetching has timed out and should be restarted
-                $aScore = time() - $aLastComplete->getTimeStamp();
-            }
-        } elseif ($aLastComplete < $fiveMinAgo) {
-            $aScore = time() - $aLastComplete->getTimeStamp();
-        }
-
-        $bScore = 0;
-        if ($bLastActivity > $bLastComplete) {
-            if ($bLastActivity < $thirtySecAgo) {
-                // The fetching has timed out and should be restarted
-                $bScore = time() - $bLastComplete->getTimeStamp();
-            }
-        } elseif ($bLastComplete < $fiveMinAgo) {
-            $bScore = time() - $bLastComplete->getTimeStamp();
-        }
+        $aScore = getRssSourcePriorityQueueScore($a);
+        $bScore = getRssSourcePriorityQueueScore($b);
 
         if ($aScore == $bScore) return 0;
         return ($aScore > $bScore) ? -1 : 1;
@@ -239,7 +215,7 @@ function provideInstructions($requestBody, $requestHeaders, $datastore, $clientI
 
     // Some clients are made to sleep until the queue reaches a certain size (ie. either for peak hours or when other clients have gone offline)
     $hibernateDuration = 600;
-    if (!shouldClientSleep($clientId, count($queue))) {
+    if (!shouldClientSleep($clientId, count($queue), $datastore->data['rssSources'])) {
         // Priority 1 -- keep the page queue full to avoid the nothing-to-do/hibernate case
         if (count($queue) < 8000 && $rssInstructions = provideInstructionsForRss($datastore))
             return $rssInstructions;
@@ -271,24 +247,52 @@ function provideInstructions($requestBody, $requestHeaders, $datastore, $clientI
     return provideHibernateResponse($hibernateDuration);
 }
 
-function shouldClientSleep($clientId, $pageQueueSize) {
+// Get score used to sort the RSS sources in a priority queue
+// The score will be 0 if the source does not need to be queried; positive if it does. Larger score means source has higher priority for querying.
+function getRssSourcePriorityQueueScore($rssSource) {
+    $thirtySecAgo  = new \DateTime('30 seconds ago');
+    $fiveMinAgo    = new \DateTime('5 minutes ago');
+    $lastActivity = new \DateTime($rssSource['lastActivity'] ?: '1 hour ago');
+    $lastComplete = new \DateTime($rssSource['lastComplete'] ?: '1 hour ago');
+
+    $score = 0;
+    if ($lastActivity > $lastComplete) {
+        if ($lastActivity < $thirtySecAgo) {
+            // The fetching has timed out and should be restarted
+            $score = time() - $lastComplete->getTimeStamp();
+        }
+    } elseif ($lastComplete < $fiveMinAgo) {
+        $score = time() - $lastComplete->getTimeStamp();
+    }
+    return $score;
+}
+
+function shouldClientSleep($clientId, $pageQueueSize, $rssSources) {
     $limits = [
-        'KristopherMacbook' => 800,
+        'KristopherMacbook' => ['pageQueue' => 800, 'rssScore' => 60 * 15],
     ];
-    return isset($limits[$clientId]) && $limits[$clientId] > $pageQueueSize;
+
+    if (empty($limits[$clientId]))
+        return false;
+
+    if ($limits[$clientId]['pageQueue'] < $pageQueueSize)
+        return true;
+
+    $highscore = 0;
+    foreach ($rssSources as $rssSource) {
+        $highscore = getRssSourcePriorityQueueScore($rssSource);
+        break;
+    }
+    if ($limits[$clientId]['rssScore'] < $highscore)
+        return true;
+
+    return false;
 }
 
 function provideInstructionsForRss($datastore) {
     foreach ($datastore->data['rssSources'] as $rssSource => $data) {
-        $lastActivity = new \DateTime($data['lastActivity'] ?: '1 hour ago');
-        $lastComplete = new \DateTime($data['lastComplete'] ?: '1 hour ago');
-
-        if ($lastActivity > $lastComplete) {
-            if ($lastActivity >= new \DateTime('30 seconds ago'))
-                break;
-        } elseif ($lastComplete >= new \DateTime('5 minutes ago')) {
+        if (!getRssSourcePriorityQueueScore($data))
             break;
-        }
 
         $datastore->data['rssSources'][$rssSource]['lastActivity'] = date(\DateTime::ATOM);
         $datastore->save();
