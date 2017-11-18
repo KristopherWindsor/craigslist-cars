@@ -216,7 +216,9 @@
                 return Math.floor(sec) + " sec.";
             if (sec < 3600)
                 return Math.floor(sec / 60) + " min.";
-            return Math.floor(sec / 3600) + " hr.";
+            if (sec < 3600 * 72)
+                return Math.floor(sec / 3600) + " hr.";
+            return Math.floor(sec / (3600 * 24)) + " days";
         }
 
         graph1();
