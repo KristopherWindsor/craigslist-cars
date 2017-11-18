@@ -67,37 +67,42 @@ if ($instructions->action == 'getPages') {
     do {
         $url = $instructions->url . $offset;
 
+        $offset += 25;
+        $isThisTheLastPage = ($offset >= $instructions->maxCount); // Want to get all results but need to stop at some point
+
         $rssContent = file_get_contents($url);
         if (!$rssContent)
-            die();
+            die('problem');
         $rssContent = preg_replace('/[[:^print:]]/', '', $rssContent);
 
         $results = new SimpleXMLElement($rssContent);
         foreach ($results->item as $item) {
             $dateArray = $item->xpath('dc:date');
             $date = (string) $dateArray[0];
-            if (new \DateTime($date) <= $loopUntil)
-                break 2;
+            if (new \DateTime($date) <= $loopUntil) {
+                $isThisTheLastPage = true;
+                break;
+            }
             $pages[] = [(string) $item->link, $date];
         }
 
-        $offset += 25;
-    } while ($offset < $instructions->maxCount); // Want to get all results but need to stop at some point
+        // Send pages[] back to server
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $endpoint . 'rssResults');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'X-SOURCE-RSS: ' . $instructions->url,
+            'X-CLIENT-ID: ' . $clientId,
+            'X-CLIENT-VERSION: ' . $CLIENT_VERSION,
+            'X-JOB-COMPLETE: ' . ($isThisTheLastPage ? 1 : 0),
+        ));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pages));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($ch);
+        curl_close($ch);
 
-    // Send pages[] back to server
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $endpoint . 'rssResults');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'X-SOURCE-RSS: ' . $instructions->url,
-        'X-CLIENT-ID: ' . $clientId,
-        'X-CLIENT-VERSION: ' . $CLIENT_VERSION,
-    ));
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pages));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $output = curl_exec($ch);
-    curl_close($ch);
-
+        sleep(1);
+    } while (!$isThisTheLastPage);
 } elseif ($instructions->action == 'updateSource') {
     file_put_contents(__FILE__ . '.tmp', $instructions->newSource);
     rename(__FILE__ . '.tmp', __FILE__);
