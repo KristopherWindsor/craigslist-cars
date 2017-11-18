@@ -62,7 +62,6 @@ if ($instructions->action == 'getPages') {
 } elseif ($instructions->action == 'getRSS') {
     $loopUntil = new \DateTime($instructions->loopUntil);
     $offset = 0;
-    $pages = [];
 
     do {
         $url = $instructions->url . $offset;
@@ -75,16 +74,21 @@ if ($instructions->action == 'getPages') {
             die('problem');
         $rssContent = preg_replace('/[[:^print:]]/', '', $rssContent);
 
+        $pages   = [];
         $results = new SimpleXMLElement($rssContent);
         foreach ($results->item as $item) {
             $dateArray = $item->xpath('dc:date');
             $date = (string) $dateArray[0];
+            // We got to items that have already been found
             if (new \DateTime($date) <= $loopUntil) {
                 $isThisTheLastPage = true;
                 break;
             }
             $pages[] = [(string) $item->link, $date];
         }
+        // Nothing else to get
+        if (!$pages)
+            $isThisTheLastPage = true;
 
         // Send pages[] back to server
         $ch = curl_init();
