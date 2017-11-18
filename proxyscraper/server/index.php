@@ -351,10 +351,11 @@ function acceptRss($requestBody, $requestHeaders, $datastore) {
         if (!$datastore->data['rssSources'][$rssSource]['newestItem'] || new \DateTime($dateUpdated) > new \DateTime($datastore->data['rssSources'][$rssSource]['newestItem'])) {
             $datastore->data['rssSources'][$rssSource]['newestItem'] = (new \DateTime($dateUpdated))->format(\DateTime::ATOM);
         }
-        $datastore->data['rssSources'][$rssSource]['lastActivity'] = date(\DateTime::ATOM);
-        if ($isComplete) {
-            $datastore->data['rssSources'][$rssSource]['lastComplete'] = date(\DateTime::ATOM);
-        }
+    }
+
+    $datastore->data['rssSources'][$rssSource]['lastActivity'] = date(\DateTime::ATOM);
+    if ($isComplete) {
+        $datastore->data['rssSources'][$rssSource]['lastComplete'] = date(\DateTime::ATOM);
     }
     $datastore->save();
 
