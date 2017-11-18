@@ -2,6 +2,14 @@
 
 $CLIENT_VERSION = 1.0;
 
+function verboseLog($data) {
+    $VERBOSE_LOG = true;
+
+    if ($VERBOSE_LOG) {
+        file_put_contents(__DIR__ . '/verbose.log', getmypid() . ' ' . json_encode($data) . "\n\n", FILE_APPEND);
+    }
+}
+
 // hibernation check
 $hibernateFilename = __DIR__ . '/hibernate.dat';
 $hibernateUntil = @file_get_contents($hibernateFilename);
@@ -31,6 +39,7 @@ sleep(rand(1, 30));
 
 // get instructions
 $instructions = @json_decode(file_get_contents($endpoint . 'instructions'));
+verboseLog(['instructions' => $instructions]);
 if (!$instructions) {
     file_put_contents($hibernateFilename, time() + 120);
     die();
@@ -54,6 +63,7 @@ if ($instructions->action == 'getPages') {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         curl_close($ch);
+        verboseLog(['url' => $endpoint . 'newPage', 'response' => $output]);
         if (!$output)
             break;
 
@@ -70,6 +80,7 @@ if ($instructions->action == 'getPages') {
         $isThisTheLastPage = ($offset >= $instructions->maxCount); // Want to get all results but need to stop at some point
 
         $rssContent = file_get_contents($url);
+        verboseLog(['url' => $url, 'strlen' => strlen($rssContent)]);
         if (!$rssContent)
             die('problem');
         $rssContent = preg_replace('/[[:^print:]]/', '', $rssContent);
@@ -104,6 +115,7 @@ if ($instructions->action == 'getPages') {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         curl_close($ch);
+        verboseLog(['url' => $endpoint . 'rssResults', 'complete' => $isThisTheLastPage, 'pages' => count($pages), 'result' => $output]);
 
         sleep(1);
     } while (!$isThisTheLastPage);
