@@ -13,6 +13,7 @@ class Datastore {
             'rssSources' => $this->getInitialRssSources(),
             'clients'    => [],
             'rssBurst'   => [],
+            'stats'      => [],
         ];
     }
 
@@ -173,6 +174,7 @@ function provideStats($requestBody, $requestHeaders, $datastore) {
         'pageQueueSizeWithoutPending' => count(getPageQueueWithoutPendingPages($datastore)),
         'clients'                     => $datastore->data['clients'],
         'rssBursts'                   => $bursts,
+        'otherStats'                  => @$datastore->data['stats'],
     ]);
 }
 
@@ -321,15 +323,21 @@ function acceptPage($requestBody, $requestHeaders, $datastore, $clientId) {
         return '';
     }
 
+    $filename = __DIR__ . '/pages/' . urlencode($sourceUrl);
+    $alreadyExists = file_exists($filename);
+
     // Track client activity
     @$datastore->data['clients'][$clientId]['pagesProvided']++;
+
+    // Stats
+    @$datastore->data['stats'][$alreadyExists ? 'pageEdits' : 'pageAdds']++;
 
     // Take page out of pending queue
     unset($datastore->data['pageQueue'][$sourceUrl]);
     $datastore->save();
 
     // Save page
-    file_put_contents(__DIR__ . '/pages/' . urlencode($sourceUrl), $requestBody);
+    file_put_contents($filename, $requestBody);
     http_response_code(201);
     return 'created';
 }
